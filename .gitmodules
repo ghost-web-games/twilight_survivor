@@ -1,0 +1,3 @@
+[submodule "src/gsdk"]
+	path = src/gsdk
+	url = https://github.com/GhostNet-Dev/gsdk.git
