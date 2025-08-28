@@ -7,6 +7,12 @@ import TapButton from "@Glibs/ux/buttons/tapbutton";
 import { IPhysicsObject } from "@Glibs/interface/iobject";
 import { ChromeEffect, DreamsOverlayEffect } from "@Glibs/ux/titlescreen/titleex";
 import RetroTitleScreen from "@Glibs/ux/titlescreen/retrotitlescreen";
+import { Player } from "@Glibs/actors/player/player";
+import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
+import gsap from "gsap";
+import { buffDefs } from "@Glibs/magical/buff/buffdefs";
+import { Buff } from "@Glibs/magical/buff/buff";
+import { SoundType } from "@Glibs/types/soundtypes";
 
 export default class TitleState implements IGameMode {
     get Objects() { return this.objs }
@@ -16,6 +22,9 @@ export default class TitleState implements IGameMode {
     tap: TapButton
     constructor(
         private eventCtrl: IEventController,
+        private camera: THREE.Camera,
+        private player: Player,
+        private playerCtrl: PlayerCtrl,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         private taskObj: ILoop[] = [],
         private phyObj: IPhysicsObject[] = [],
@@ -55,6 +64,28 @@ export default class TitleState implements IGameMode {
     async Init() {
         this.tap.Show()
         this.titleScreen.activate();
+
+        this.player.Pos.set(0, 0, 0)
+        this.playerCtrl.reset()
+        this.playerCtrl.init()
+        this.playerCtrl.changeState(this.playerCtrl.SleepingIdleSt)
+
+        const start = this.player.Pos.clone()
+        start.addScalar(10)
+        const look = this.player.Pos.clone()
+        look.y += .5
+        gsap.to(this.camera.position, {
+            x: start.x, y: start.y + 5, z: start.z, duration: 2, onUpdate: () => {
+                this.camera.lookAt(look)
+        /**
+         * Complete callback for camera animation. Logs the final look-at position.
+         */
+            }, onComplete: () => {
+                console.log(look)
+            }
+        })
+        this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff, new Buff((buffDefs.DarkSide)))
+        this.eventCtrl.SendEventMessage(EventTypes.PlayBGM, "whisper", SoundType.WhispersOfEldertree, { loop: true })
     }
     Uninit(): void {
         this.tap.Hide()

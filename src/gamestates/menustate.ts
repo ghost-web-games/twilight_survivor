@@ -41,9 +41,9 @@ export default class MenuState implements IGameMode {
     ) {
         const iconDiv = document.createElement("div")
         const icon = new MenuIcon({
-            text: "Tranining", boxWidth: "100px", color: IconsColor.Yellow, 
+            text: "New Game", boxWidth: "100px", color: IconsColor.Yellow, 
             icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
-                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "training")
+                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
             }
         })
         iconDiv.style.position = "absolute"
@@ -83,8 +83,6 @@ export default class MenuState implements IGameMode {
         //this.camera.controls.enabled = false
         this.camera.controls.enabled = true
         this.camera.lookTarget = false
-        this.player.Pos.set(0, 0, 0)
-        this.playerCtrl.reset()
 
         document.body.appendChild(this.startDom)
         this.cdom.Show()
@@ -92,11 +90,11 @@ export default class MenuState implements IGameMode {
         this.sdom.Show()
 
         const start = this.player.Pos.clone()
-        start.addScalar(4)
+        start.addScalar(10)
         const look = this.player.Pos.clone()
         look.y += .5
         gsap.to(this.camera.position, {
-            x: start.x, y: start.y - 1.5, z: start.z, duration: 1, onUpdate: () => {
+            x: start.x, y: start.y + 10, z: start.z, duration: 1, onUpdate: () => {
                 this.camera.lookAt(look)
             }, onComplete: () => {
                 console.log(look)

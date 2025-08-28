@@ -31,6 +31,10 @@ import WorldMap from '@Glibs/world/worldmap/worldmap'
 import { InitActionRegistry } from '@Glibs/actions/actionregisterinit'
 import { FontType } from '@Glibs/types/fonttypes'
 import { DebugDiv } from '@Glibs/systems/debugger/debugdiv'
+import { Postpro2 } from '@Glibs/systems/postprocess/postpro2'
+import { MapEntryType } from '@Glibs/types/worldmaptypes'
+import { AudioManagerMulti } from '@Glibs/systems/sounds/audiomanager'
+import Input from '@Glibs/systems/inputs/input'
 
 export class TwilightSurvivor {
     scene = new THREE.Scene()
@@ -49,11 +53,12 @@ export class TwilightSurvivor {
     audioListener = new THREE.AudioListener()
     camera = new Camera(this.canvas, this.eventCtrl, this.renderer.domElement, undefined)
     sounds = new Sounds(this.audioListener, this.eventCtrl)
+    audioMgr = new AudioManagerMulti(this.eventCtrl, this.camera)
     physics = new OptPhysics(this.scene, this.eventCtrl)
     alarm = new Alarm(this.eventCtrl)
     toast = new Toast(this.eventCtrl)
     debug = new DebugDiv(this.eventCtrl)
-    pp = new Postpro(this.scene, this.camera, this.renderer, this.eventCtrl)
+    pp = new Postpro2(this.scene, this.camera, this.renderer, this.eventCtrl)
 
     monDb = new MonsterDb()
     invenFab = new InvenFactory(this.loader, this.eventCtrl)
@@ -64,7 +69,9 @@ export class TwilightSurvivor {
     drops = new Drops(this.loader, this.scene, this.eventCtrl, this.player)
 
     light = new DefaultLights(this.scene)
-    worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light)
+    worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
+
+    input = new Input(this.eventCtrl)
 
     sky: SkyBoxAllTime
     constructor() {
@@ -88,11 +95,10 @@ export class TwilightSurvivor {
         this.sky = this.worldMap.MakeSky(this.light)
         this.scene.add(this.sky)
 
+
         this.worldMap.MakeMapObject().then((map) => {
             this.scene.add(map)
         })
-        this.InitScene()
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 70)
         const fogColor = 0x87ceeb
         this.scene.fog = new THREE.FogExp2(fogColor, 0.0025);
 
@@ -103,8 +109,15 @@ export class TwilightSurvivor {
         document.addEventListener("fullscreenchange", this.resize.bind(this));
         document.addEventListener("webkitfullscreenchange", this.resize.bind(this)); // iOS 대응
 
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 100)
         this.resize()
+    }
+    async init() {
+        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 70)
+
+        await this.GltfLoad()
+        await this.InitScene()
+
+        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 100)
     }
     resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight
@@ -117,16 +130,25 @@ export class TwilightSurvivor {
         this.renderer.setPixelRatio(minPixel);
         this.render()
     }
+    async GltfLoad() {
+        const ret = await Promise.all([
+            await this.player.Loader(this.loader.GetAssets(Char.CharHumanFemale), new THREE.Vector3(0, 0, 0), "dog"),
+        ]).then(() => {
+            this.player.Visible = true
+            this.physics.addPlayer(this.player)
+        })
+        return ret
+    }
     async InitScene() {
-        this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, [], [], [this.player,]))
+        const stormRain = await this.worldMap.MakeMapObject(MapEntryType.Rain, {})
+
         this.gamecenter.RegisterGameMode("titlemode",
-            new TitleState(this.eventCtrl, [], [], [this.player,]))
+            new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
-                this.scene, this.camera, [], [], [this.player,
-
-            ]))
+                this.scene, this.camera, [], [stormRain], [this.player, ]))
+        this.gamecenter.RegisterGameMode("play",
+            new PlayState(this.eventCtrl,this.player, [], [], [this.player,]))
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }
 
@@ -150,4 +172,5 @@ export class TwilightSurvivor {
 }
 
 const app = new TwilightSurvivor()
+app.init()
 app.animate()
