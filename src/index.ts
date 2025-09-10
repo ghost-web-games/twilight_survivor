@@ -35,6 +35,8 @@ import { Postpro2 } from '@Glibs/systems/postprocess/postpro2'
 import { MapEntryType } from '@Glibs/types/worldmaptypes'
 import { AudioManagerMulti } from '@Glibs/systems/sounds/audiomanager'
 import Input from '@Glibs/systems/inputs/input'
+import { ObjectPlacer, PlacedUV, PlacementInfo } from '@Glibs/world/worldmap/autoobjectplacer'
+import CustomGround from '@Glibs/world/ground/customground'
 
 export class TwilightSurvivor {
     scene = new THREE.Scene()
@@ -95,10 +97,6 @@ export class TwilightSurvivor {
         this.sky = this.worldMap.MakeSky(this.light)
         this.scene.add(this.sky)
 
-
-        this.worldMap.MakeMapObject().then((map) => {
-            this.scene.add(map)
-        })
         const fogColor = 0x87ceeb
         this.scene.fog = new THREE.FogExp2(fogColor, 0.0025);
 
@@ -112,12 +110,111 @@ export class TwilightSurvivor {
         this.resize()
     }
     async init() {
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 70)
+        const map = await this.worldMap.MakeMapObject()
+        this.scene.add(map)
+        const blendedMap = this.worldMap.GetMapObject() as CustomGround
+        const placer = new ObjectPlacer()
+        const groundMesh = blendedMap.obj
+        const dataTexture = blendedMap.blendMap
+        let occupied: PlacedUV[] = []
+
+        // Pass 1: 바위 배치 (흙 지역에만)
+        const rockResult = placer.generate(groundMesh, dataTexture, {
+            seed: 100,
+            pattern: 'rock',
+            density: 1.0,
+            minRadius: 2.8,
+            numKinds: 5,
+            scaleMin: 0.7,
+            scaleRange: 0.8,
+            occupiedUVs: occupied, // 처음에는 빈 배열
+        });
+        occupied = rockResult.occupiedUVs; // 점유 공간 업데이트
+        // console.log(rockResult.placements)
+        this.autoMap(rockResult.placements, [1, 1], false, Char.QuaterniusNatureRockpathRoundSmall1, MapEntryType.InstancedVegetation)
+
+        // Pass 2: 나무 배치 (식생 지역, 군집)
+        const treeResult = placer.generate(groundMesh, dataTexture, {
+            seed: 200,
+            pattern: 'tree',
+            density: 8.0,
+            minRadius: 2.5,
+            numKinds: 5,
+            scaleMin: 0.9,
+            scaleRange: 0.6,
+            occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
+        });
+        occupied = treeResult.occupiedUVs; // 점유 공간 다시 업데이트
+        // console.log(treeResult.placements)
+        const trees = this.autoMap(treeResult.placements, [2, 3], true, Char.QuaterniusNatureDeadtree1)
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterPhysic, trees, true)
+        const pResult = placer.generate(groundMesh, dataTexture, {
+            seed: 300,
+            pattern: 'flower',
+            density: 8.8,
+            minRadius: 0.5,
+            numKinds: 5,
+            scaleMin: 0.8,
+            scaleRange: 0.6,
+            occupiedUVs: occupied,
+        });
+        occupied = pResult.occupiedUVs;
+        // console.log(plantResult.placements)
+        this.autoMap(pResult.placements, [1, 3], true, Char.QuaterniusNatureGrassCommonShort)
+
+
+        // Pass 3: 식물 배치 (식생 지역, 군집)
+        const plantResult = placer.generate(groundMesh, dataTexture, {
+            seed: 300,
+            pattern: 'flower',
+            density: 8.8,
+            minRadius: 0.5,
+            numKinds: 5,
+            scaleMin: 0.8,
+            scaleRange: 0.6,
+            occupiedUVs: occupied,
+        });
+        occupied = plantResult.occupiedUVs;
+        // console.log(plantResult.placements)
+        this.autoMap(plantResult.placements, [8, 16], true)
+
+
+        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 40)
 
         await this.GltfLoad()
+        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 70)
         await this.InitScene()
 
         this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 100)
+    }
+    autoMap(objs: PlacementInfo[], countRange?: number[], wind: boolean = true, startCharId?: Char, maptype = MapEntryType.WindyInstancedVegetation) {
+        const res = new THREE.Group()
+        const f = objs.reduce((acc, current) => {
+            const key = current.kind
+            if (!acc[key]) acc[key] = []
+            acc[key].push(current)
+            return acc
+        }, {} as Record<number, PlacementInfo[]>)
+        Object.values(f).forEach(async (objs) => {
+            const charId = (startCharId) ? startCharId + objs[0].kind : undefined
+            const mesh = await this.worldMap.MakeMapObject(maptype,
+                {
+                    transforms: objs, id: charId, config: {
+                        cluster: {
+                            enabled: true,
+                            countRange: countRange,
+                            radius: 1.0,
+                            distribution: "uniform",
+                            posJitterY: [0, 0.03],
+                            rotJitterYDeg: 20,
+                            scaleJitter: [0.9, 1.18],
+                        }
+                    }
+                })
+            res.add(mesh)
+        })
+        this.scene.add(res)
+        return res
     }
     resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight
@@ -143,12 +240,14 @@ export class TwilightSurvivor {
         const stormRain = await this.worldMap.MakeMapObject(MapEntryType.Rain, {})
 
         this.gamecenter.RegisterGameMode("titlemode",
-            new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl, [], [stormRain], [this.player,]))
+            new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl, 
+                [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
-                this.scene, this.camera, [], [stormRain], [this.player, ]))
+                this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl,this.player, [], [], [this.player,]))
+            new PlayState(this.eventCtrl, this.player, [], [stormRain], [this.player,]))
+
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }
 
