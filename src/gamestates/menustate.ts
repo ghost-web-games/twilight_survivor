@@ -46,11 +46,18 @@ export default class MenuState implements IGameMode {
                 this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
             }
         })
+        const openingIcon = new MenuIcon({
+            text: "Opening", boxWidth: "100px", color: IconsColor.Yellow, 
+            icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
+                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "opening")
+            }
+        })
         iconDiv.style.position = "absolute"
         iconDiv.style.bottom = "15%"
         iconDiv.style.left = "50%"
         iconDiv.style.transform = "translate(-50%, -50%)"
         iconDiv.appendChild(icon.dom)
+        iconDiv.appendChild(openingIcon.dom)
         this.startDom = iconDiv
 
         this.cdom = new MenuGroup(document.body, { top: "10%", left: "0px", opacity: "0.5", vertical: true })
@@ -79,9 +86,10 @@ export default class MenuState implements IGameMode {
         this.player.Visible = true
         this.scene.add(this.player.Meshs)
     }
+    tl: gsap.core.Timeline = gsap.timeline()
     async Init() {
-        this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
-        this.camera.controls.enabled = true
+        // this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
+        this.camera.controls.enabled = false
         document.body.appendChild(this.startDom)
         this.cdom.Show()
         this.mdom.Show()
@@ -92,19 +100,19 @@ export default class MenuState implements IGameMode {
         const look = this.player.Pos.clone()
         look.y += .5
         this.camera.lookAt(look)
-        const tl = gsap.timeline()
 
-        tl.to(this.camera.position, {
-            x: start.x, y: start.y + 10, z: start.z, duration: 2, onUpdate: () => { this.camera.lookAt(look) }
+        this.tl.to(this.camera.position, {
+            x: start.x, y: start.y + 10, z: start.z, duration: 2, onUpdate: () => { this.camera.lookAt(this.player.Pos) }
         })
         .to(this.camera.position, {
-            x: start.x + 20, y: start.y + 40, z: start.z - 30, duration: 10, onUpdate: () => { this.camera.lookAt(look) }
+            x: start.x + 20, y: start.y + 40, z: start.z - 30, duration: 10, onUpdate: () => { this.camera.lookAt(this.player.Pos) }
         })
         .to(this.camera.position, {
-            x: start.x + 10, y: start.y + 10, z: start.z, duration: 10, onUpdate: () => { this.camera.lookAt(look) }
+            x: start.x + 10, y: start.y + 10, z: start.z, duration: 10, onUpdate: () => { this.camera.lookAt(this.player.Pos) }
         })
     }
     Uninit(): void {
+        this.tl.kill()
         this.cdom.Hide()
         this.mdom.Hide()
         this.sdom.Hide()

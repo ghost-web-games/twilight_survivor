@@ -7,8 +7,9 @@ import { EventTypes } from '@Glibs/types/globaltypes';
 import { Player } from "@Glibs/actors/player/player";
 import { InputMode } from "@Glibs/systems/inputs/input";
 import { Camera } from "@Glibs/systems/camera/camera";
+import { Npc } from "@Glibs/actors/npc/npc";
 
-export default class PlayState implements IGameMode {
+export default class OpeningState implements IGameMode {
     get Objects() { return this.objs }
     get TaskObj() { return this.taskObj }
     get Physics() { return this.phyObj }
@@ -16,6 +17,7 @@ export default class PlayState implements IGameMode {
         private eventCtrl: IEventController,
         private camera: Camera,
         private player: Player,
+        private npc: Npc,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         private taskObj: ILoop[] = [],
         private phyObj: IPhysicsObject[] = [],
@@ -23,13 +25,6 @@ export default class PlayState implements IGameMode {
 
     }
     async Init() {
-        this.camera.controls.enabled = true
-        this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
-
-        this.eventCtrl.SendEventMessage(EventTypes.JoypadOn, InputMode.Joystick)
-        this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
-
-        this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
     }
     Uninit(): void {
     }

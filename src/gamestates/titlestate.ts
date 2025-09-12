@@ -86,7 +86,7 @@ export default class TitleState implements IGameMode {
                 console.log(look)
             }
         })
-        this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff, new Buff(buffDefs.DarkSide))
+        this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff + "player", new Buff(buffDefs.DarkSide))
         this.eventCtrl.SendEventMessage(EventTypes.PlayBGM, "whisper", SoundType.WhispersOfEldertree, { loop: true })
     }
     Uninit(): void {

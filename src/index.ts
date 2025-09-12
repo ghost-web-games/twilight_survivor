@@ -36,6 +36,8 @@ import { AudioManagerMulti } from '@Glibs/systems/sounds/audiomanager'
 import Input from '@Glibs/systems/inputs/input'
 import { ObjectPlacer, PlacedUV, PlacementInfo } from '@Glibs/world/worldmap/autoobjectplacer'
 import CustomGround from '@Glibs/world/ground/customground'
+import { Npc } from '@Glibs/actors/npc/npc'
+import OpeningState from './gamestates/openingstate'
 
 export class TwilightSurvivor {
     scene = new THREE.Scene()
@@ -68,6 +70,7 @@ export class TwilightSurvivor {
     monsters = new Monsters(this.loader, this.eventCtrl, this.scene, this.player, this.physics, this.monDb)
     projectile = new Projectile(this.eventCtrl, this.scene, this.playerCtrl.targets, this.monDb)
     drops = new Drops(this.loader, this.scene, this.eventCtrl, this.player)
+    npc = new Npc(this.loader, this.loader.GetAssets(Char.UltimatePAPHeartHalf), this.eventCtrl, this.scene, this.invenFab)
 
     light = new DefaultLights(this.scene)
     worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
@@ -236,6 +239,7 @@ export class TwilightSurvivor {
     async GltfLoad() {
         const ret = await Promise.all([
             await this.player.Loader(this.loader.GetAssets(Char.CharHumanFemale), new THREE.Vector3(0, 0, 0), "dog"),
+            await this.npc.Loader(this.loader.GetAssets(Char.UltimatePAPHeartHalf), new THREE.Vector3(0, 0, 0), "baby"),
         ]).then(() => {
             this.player.Visible = true
             this.physics.addPlayer(this.player)
@@ -252,8 +256,10 @@ export class TwilightSurvivor {
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
                 this.scene, this.camera, [], [stormRain], [this.player,]))
+        this.gamecenter.RegisterGameMode("opening",
+            new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.player, [], [stormRain], [this.player,]))
+            new PlayState(this.eventCtrl, this.camera, this.player, [], [stormRain], [this.player,]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }
