@@ -61,11 +61,12 @@ export default class TitleState implements IGameMode {
         })
         this.tap.AddChild(this.titleScreen)
     }
+    myTween?: gsap.core.Tween
     async Init() {
         this.tap.Show()
         this.titleScreen.activate();
 
-        this.player.Pos.set(0, 0, 0)
+        this.player.Pos.set(20, -0.6, -145)
         this.playerCtrl.reset()
         this.playerCtrl.init()
         this.playerCtrl.changeState(this.playerCtrl.SleepingIdleSt)
@@ -74,8 +75,9 @@ export default class TitleState implements IGameMode {
         start.addScalar(10)
         const look = this.player.Pos.clone()
         look.y += .5
-        gsap.to(this.camera.position, {
-            x: start.x, y: start.y + 5, z: start.z, duration: 2, onUpdate: () => {
+        this.camera.position.set(start.x, 25, start.z + 50)
+        this.myTween = gsap.to(this.camera.position, {
+            x: start.x, y: start.y, z: start.z + 5, duration: 20, onUpdate: () => {
                 this.camera.lookAt(look)
         /**
          * Complete callback for camera animation. Logs the final look-at position.
@@ -88,6 +90,7 @@ export default class TitleState implements IGameMode {
         this.eventCtrl.SendEventMessage(EventTypes.PlayBGM, "whisper", SoundType.WhispersOfEldertree, { loop: true })
     }
     Uninit(): void {
+        this.myTween?.kill()
         this.tap.Hide()
     }
     Renderer(r: IPostPro, delta: number): void {

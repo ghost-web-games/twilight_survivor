@@ -19,7 +19,6 @@ import Spinning from '@Glibs/ux/loading/spinning'
 import FontLoader from '@Glibs/ux/text/fontloader'
 import Toast from '@Glibs/ux/toast/toast'
 import OptPhysics from '@Glibs/world/physics/optphysic'
-import { SkyBoxAllTime } from '@Glibs/world/sky/skyboxalltime'
 import * as THREE from 'three'
 import PlayState from './gamestates/playstate'
 import TitleState from './gamestates/titlestate'
@@ -75,7 +74,6 @@ export class TwilightSurvivor {
 
     input = new Input(this.eventCtrl)
 
-    sky: SkyBoxAllTime
     constructor() {
         console.log('Twilight Survivor')
         InitActionRegistry(this.eventCtrl, this.scene)
@@ -90,17 +88,18 @@ export class TwilightSurvivor {
         const pixel = (window.devicePixelRatio >= 2) ? window.devicePixelRatio / 2 : window.devicePixelRatio
         const minPixel = Math.min(pixel, 1.5)
         this.renderer.setPixelRatio(minPixel);
-        document.body.appendChild(this.renderer.domElement)
 
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 10)
 
-        this.sky = this.worldMap.MakeSky(this.light)
-        this.scene.add(this.sky)
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
+            document.body.appendChild(this.renderer.domElement)
 
-        const fogColor = 0x87ceeb
-        this.scene.fog = new THREE.FogExp2(fogColor, 0.0025);
+            const sky = this.worldMap.MakeSky(this.light)
+            this.scene.add(sky)
 
-        this.font.fontCss(FontType.Fredoka)
+            const fogColor = 0x87ceeb
+            this.scene.fog = new THREE.FogExp2(fogColor, 0.0025);
+            this.font.fontCss(FontType.Fredoka)
+        })
 
         window.addEventListener('resize', this.resize.bind(this), false)
         // 전체 화면 진입/해제 이벤트 대응
@@ -110,82 +109,89 @@ export class TwilightSurvivor {
         this.resize()
     }
     async init() {
-        const map = await this.worldMap.MakeMapObject()
-        this.scene.add(map)
-        const blendedMap = this.worldMap.GetMapObject() as CustomGround
-        const placer = new ObjectPlacer()
-        const groundMesh = blendedMap.obj
-        const dataTexture = blendedMap.blendMap
-        let occupied: PlacedUV[] = []
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
+            const map = await this.worldMap.MakeMapObject()
+            this.scene.add(map)
+            const beach = await this.worldMap.MakeMapObject(MapEntryType.Beach, map)
+            const blendedMap = this.worldMap.GetMapObject() as CustomGround
+            const placer = new ObjectPlacer()
+            const groundMesh = blendedMap.obj
+            const dataTexture = blendedMap.blendMap
+            let occupied: PlacedUV[] = []
 
-        // Pass 1: 바위 배치 (흙 지역에만)
-        const rockResult = placer.generate(groundMesh, dataTexture, {
-            seed: 100,
-            pattern: 'rock',
-            density: 1.0,
-            minRadius: 2.8,
-            numKinds: 5,
-            scaleMin: 0.7,
-            scaleRange: 0.8,
-            occupiedUVs: occupied, // 처음에는 빈 배열
+            // Pass 1: 바위 배치 (흙 지역에만)
+            const rockResult = placer.generate(groundMesh, dataTexture, {
+                seed: 100,
+                pattern: 'rock',
+                density: 1.0,
+                minRadius: 2.8,
+                numKinds: 5,
+                scaleMin: 0.7,
+                scaleRange: 0.8,
+                occupiedUVs: occupied, // 처음에는 빈 배열
+            });
+            occupied = rockResult.occupiedUVs; // 점유 공간 업데이트
+            // console.log(rockResult.placements)
+            this.autoMap(rockResult.placements, [1, 1], false, Char.QuaterniusNatureRockpathRoundSmall1, MapEntryType.InstancedVegetation)
+
+            // Pass 2: 나무 배치 (식생 지역, 군집)
+            const treeResult = placer.generate(groundMesh, dataTexture, {
+                seed: 200,
+                pattern: 'tree',
+                density: 2.0,
+                minRadius: 2.5,
+                numKinds: 5,
+                scaleMin: 0.9,
+                scaleRange: 0.6,
+                occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
+            });
+            occupied = treeResult.occupiedUVs; // 점유 공간 다시 업데이트
+            // console.log(treeResult.placements)
+            const trees = this.autoMap(treeResult.placements, [1, 1], true, Char.QuaterniusNatureDeadtree1)
+            this.eventCtrl.SendEventMessage(EventTypes.RegisterPhysic, trees, true)
+            const pResult = placer.generate(groundMesh, dataTexture, {
+                seed: 300,
+                pattern: 'flower',
+                density: 8.8,
+                minRadius: 0.5,
+                numKinds: 5,
+                scaleMin: 0.8,
+                scaleRange: 0.6,
+                occupiedUVs: occupied,
+            });
+            occupied = pResult.occupiedUVs;
+            // console.log(plantResult.placements)
+            this.autoMap(pResult.placements, [1, 3], true, Char.QuaterniusNatureGrassCommonShort)
+
+
+            // Pass 3: 식물 배치 (식생 지역, 군집)
+            const plantResult = placer.generate(groundMesh, dataTexture, {
+                seed: 300,
+                pattern: 'flower',
+                density: 8.8,
+                minRadius: 0.5,
+                numKinds: 5,
+                scaleMin: 0.8,
+                scaleRange: 0.6,
+                occupiedUVs: occupied,
+            });
+            occupied = plantResult.occupiedUVs;
+            // console.log(plantResult.placements)
+            this.autoMap(plantResult.placements, [8, 16], true)
+        })
+
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
+            await this.GltfLoad()
+        })
+
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
+            await this.InitScene()
+        })
+        // DOM이 완전히 로드된 후 스크립트 실행
+        window.addEventListener('DOMContentLoaded', () => {
+            // 실제 애플리케이션에서는 이 부분에 수행해야 할 함수들을 등록합니다.
+            this.loading.startProcessing(1); // 각 작업 사이에 300ms 지연
         });
-        occupied = rockResult.occupiedUVs; // 점유 공간 업데이트
-        // console.log(rockResult.placements)
-        this.autoMap(rockResult.placements, [1, 1], false, Char.QuaterniusNatureRockpathRoundSmall1, MapEntryType.InstancedVegetation)
-
-        // Pass 2: 나무 배치 (식생 지역, 군집)
-        const treeResult = placer.generate(groundMesh, dataTexture, {
-            seed: 200,
-            pattern: 'tree',
-            density: 8.0,
-            minRadius: 2.5,
-            numKinds: 5,
-            scaleMin: 0.9,
-            scaleRange: 0.6,
-            occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
-        });
-        occupied = treeResult.occupiedUVs; // 점유 공간 다시 업데이트
-        // console.log(treeResult.placements)
-        const trees = this.autoMap(treeResult.placements, [2, 3], true, Char.QuaterniusNatureDeadtree1)
-        this.eventCtrl.SendEventMessage(EventTypes.RegisterPhysic, trees, true)
-        const pResult = placer.generate(groundMesh, dataTexture, {
-            seed: 300,
-            pattern: 'flower',
-            density: 8.8,
-            minRadius: 0.5,
-            numKinds: 5,
-            scaleMin: 0.8,
-            scaleRange: 0.6,
-            occupiedUVs: occupied,
-        });
-        occupied = pResult.occupiedUVs;
-        // console.log(plantResult.placements)
-        this.autoMap(pResult.placements, [1, 3], true, Char.QuaterniusNatureGrassCommonShort)
-
-
-        // Pass 3: 식물 배치 (식생 지역, 군집)
-        const plantResult = placer.generate(groundMesh, dataTexture, {
-            seed: 300,
-            pattern: 'flower',
-            density: 8.8,
-            minRadius: 0.5,
-            numKinds: 5,
-            scaleMin: 0.8,
-            scaleRange: 0.6,
-            occupiedUVs: occupied,
-        });
-        occupied = plantResult.occupiedUVs;
-        // console.log(plantResult.placements)
-        this.autoMap(plantResult.placements, [8, 16], true)
-
-
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 40)
-
-        await this.GltfLoad()
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 70)
-        await this.InitScene()
-
-        this.eventCtrl.SendEventMessage(EventTypes.LoadingProgress, 100)
     }
     autoMap(objs: PlacementInfo[], countRange?: number[], wind: boolean = true, startCharId?: Char, maptype = MapEntryType.WindyInstancedVegetation) {
         const res = new THREE.Group()
@@ -238,9 +244,10 @@ export class TwilightSurvivor {
     }
     async InitScene() {
         const stormRain = await this.worldMap.MakeMapObject(MapEntryType.Rain, {})
+        stormRain.Mesh.position.set(0, 0, -100)
 
         this.gamecenter.RegisterGameMode("titlemode",
-            new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl, 
+            new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl,
                 [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,

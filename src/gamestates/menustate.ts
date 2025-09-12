@@ -80,10 +80,8 @@ export default class MenuState implements IGameMode {
         this.scene.add(this.player.Meshs)
     }
     async Init() {
-        //this.camera.controls.enabled = false
+        this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
         this.camera.controls.enabled = true
-        this.camera.lookTarget = false
-
         document.body.appendChild(this.startDom)
         this.cdom.Show()
         this.mdom.Show()
@@ -93,12 +91,17 @@ export default class MenuState implements IGameMode {
         start.addScalar(10)
         const look = this.player.Pos.clone()
         look.y += .5
-        gsap.to(this.camera.position, {
-            x: start.x, y: start.y + 10, z: start.z, duration: 1, onUpdate: () => {
-                this.camera.lookAt(look)
-            }, onComplete: () => {
-                console.log(look)
-            }
+        this.camera.lookAt(look)
+        const tl = gsap.timeline()
+
+        tl.to(this.camera.position, {
+            x: start.x, y: start.y + 10, z: start.z, duration: 2, onUpdate: () => { this.camera.lookAt(look) }
+        })
+        .to(this.camera.position, {
+            x: start.x + 20, y: start.y + 40, z: start.z - 30, duration: 10, onUpdate: () => { this.camera.lookAt(look) }
+        })
+        .to(this.camera.position, {
+            x: start.x + 10, y: start.y + 10, z: start.z, duration: 10, onUpdate: () => { this.camera.lookAt(look) }
         })
     }
     Uninit(): void {
@@ -106,9 +109,6 @@ export default class MenuState implements IGameMode {
         this.mdom.Hide()
         this.sdom.Hide()
         document.body.removeChild(this.startDom)
-
-        this.camera.controls.enabled = true
-        this.camera.lookTarget = true
     }
     Renderer(r: IPostPro, delta: number): void {
         r.render(delta)
