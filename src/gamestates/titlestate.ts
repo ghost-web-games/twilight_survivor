@@ -13,6 +13,7 @@ import gsap from "gsap";
 import { buffDefs } from "@Glibs/magical/buff/buffdefs";
 import { Buff } from "@Glibs/magical/buff/buff";
 import { SoundType } from "@Glibs/types/soundtypes";
+import { DefaultPosition } from "../index";
 
 export default class TitleState implements IGameMode {
     get Objects() { return this.objs }
@@ -66,7 +67,7 @@ export default class TitleState implements IGameMode {
         this.tap.Show()
         this.titleScreen.activate();
 
-        this.player.Pos.set(20, -0.6, -145)
+        this.player.Pos.copy(DefaultPosition)
         this.playerCtrl.reset()
         this.playerCtrl.init()
         this.playerCtrl.changeState(this.playerCtrl.SleepingIdleSt)
@@ -87,6 +88,7 @@ export default class TitleState implements IGameMode {
             }
         })
         this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff + "player", new Buff(buffDefs.DarkSide))
+        this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff + "npc", new Buff(buffDefs.DarkSide))
         this.eventCtrl.SendEventMessage(EventTypes.PlayBGM, "whisper", SoundType.WhispersOfEldertree, { loop: true })
     }
     Uninit(): void {

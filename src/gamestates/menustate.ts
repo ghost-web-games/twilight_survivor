@@ -16,6 +16,7 @@ import { Loader } from "@Glibs/loader/loader";
 import { EventTypes } from "@Glibs/types/globaltypes";
 import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import { Char } from "@Glibs/loader/assettypes";
+import { Grid } from "@Glibs/ux/grid/grid";
 
 export default class MenuState implements IGameMode {
     get Objects() { return this.objs }
@@ -40,24 +41,28 @@ export default class MenuState implements IGameMode {
         private phyObj: IPhysicsObject[] = [],
     ) {
         const iconDiv = document.createElement("div")
+        const grid = new Grid()
         const icon = new MenuIcon({
             text: "New Game", boxWidth: "100px", color: IconsColor.Yellow, 
-            icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
-                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
-            }
-        })
-        const openingIcon = new MenuIcon({
-            text: "Opening", boxWidth: "100px", color: IconsColor.Yellow, 
             icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
                 this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "opening")
             }
         })
+        const openingIcon = new MenuIcon({
+            text: "Test Play", boxWidth: "100px", color: IconsColor.Yellow, 
+            icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
+                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
+            }
+        })
+        grid.RenderHTML()
+        grid.AddChildDom(icon.dom)
+        grid.AddChildDom(openingIcon.dom)
+
         iconDiv.style.position = "absolute"
         iconDiv.style.bottom = "15%"
         iconDiv.style.left = "50%"
         iconDiv.style.transform = "translate(-50%, -50%)"
-        iconDiv.appendChild(icon.dom)
-        iconDiv.appendChild(openingIcon.dom)
+        iconDiv.appendChild(grid.Dom)
         this.startDom = iconDiv
 
         this.cdom = new MenuGroup(document.body, { top: "10%", left: "0px", opacity: "0.5", vertical: true })

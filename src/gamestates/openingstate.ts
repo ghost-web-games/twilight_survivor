@@ -8,6 +8,7 @@ import { Player } from "@Glibs/actors/player/player";
 import { InputMode } from "@Glibs/systems/inputs/input";
 import { Camera } from "@Glibs/systems/camera/camera";
 import { Npc } from "@Glibs/actors/npc/npc";
+import { DefaultPosition } from "../index";
 
 export default class OpeningState implements IGameMode {
     get Objects() { return this.objs }
@@ -25,6 +26,9 @@ export default class OpeningState implements IGameMode {
 
     }
     async Init() {
+        this.npc.Visible = true
+        this.npc.Pos.copy(DefaultPosition)
+        this.npc.Pos.x += 10
     }
     Uninit(): void {
     }

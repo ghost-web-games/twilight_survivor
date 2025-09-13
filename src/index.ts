@@ -38,6 +38,9 @@ import { ObjectPlacer, PlacedUV, PlacementInfo } from '@Glibs/world/worldmap/aut
 import CustomGround from '@Glibs/world/ground/customground'
 import { Npc } from '@Glibs/actors/npc/npc'
 import OpeningState from './gamestates/openingstate'
+import { NpcCtrl } from '@Glibs/actors/npc/npcctrl'
+
+export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 
 export class TwilightSurvivor {
     scene = new THREE.Scene()
@@ -71,6 +74,7 @@ export class TwilightSurvivor {
     projectile = new Projectile(this.eventCtrl, this.scene, this.playerCtrl.targets, this.monDb)
     drops = new Drops(this.loader, this.scene, this.eventCtrl, this.player)
     npc = new Npc(this.loader, this.loader.GetAssets(Char.UltimatePAPHeartHalf), this.eventCtrl, this.scene, this.invenFab)
+    npcCtrl = new NpcCtrl(this.npc, this.invenFab.inven, this.physics, this.camera, this.eventCtrl, this.playerCtrl.IdleSt)
 
     light = new DefaultLights(this.scene)
     worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
@@ -166,6 +170,20 @@ export class TwilightSurvivor {
             // console.log(plantResult.placements)
             this.autoMap(pResult.placements, [1, 3], true, Char.QuaterniusNatureGrassCommonShort)
 
+            // pass Edge
+            const pEdgeResult = placer.generate(groundMesh, dataTexture, {
+                seed: 500,
+                pattern: 'edge',
+                density: 5.8,
+                minRadius: 0.5,
+                numKinds: 3,
+                scaleMin: 4,
+                scaleRange: 8,
+                occupiedUVs: occupied,
+            });
+            occupied = pEdgeResult.occupiedUVs;
+            // console.log(plantResult.placements)
+            const treesEdge = this.autoMap(pEdgeResult.placements, [1, 3], true, Char.QuaterniusNatureRockMedium1)
 
             // Pass 3: 식물 배치 (식생 지역, 군집)
             const plantResult = placer.generate(groundMesh, dataTexture, {
@@ -249,17 +267,25 @@ export class TwilightSurvivor {
     async InitScene() {
         const stormRain = await this.worldMap.MakeMapObject(MapEntryType.Rain, {})
         stormRain.Mesh.position.set(0, 0, -100)
+        const defaultPos = DefaultPosition.clone()
+        defaultPos.x += 10
+        defaultPos.y = 0
+        defaultPos.z += 10
+
+        const campfire = await this.worldMap.MakeMapObject(MapEntryType.Interactive, { type: Char.None, position: defaultPos, boxType: "campfire" })
 
         this.gamecenter.RegisterGameMode("titlemode",
             new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl,
                 [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
-                this.scene, this.camera, [], [stormRain], [this.player,]))
+                this.scene, this.camera, [], [stormRain, campfire], [this.player,]))
         this.gamecenter.RegisterGameMode("opening",
-            new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], [stormRain], [this.player,]))
+            new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], 
+                [stormRain, campfire], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.camera, this.player, [], [stormRain], [this.player,]))
+            new PlayState(this.eventCtrl, this.camera, this.player, this.npc, [], 
+                [stormRain, campfire], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }

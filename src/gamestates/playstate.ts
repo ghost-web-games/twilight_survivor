@@ -7,6 +7,8 @@ import { EventTypes } from '@Glibs/types/globaltypes';
 import { Player } from "@Glibs/actors/player/player";
 import { InputMode } from "@Glibs/systems/inputs/input";
 import { Camera } from "@Glibs/systems/camera/camera";
+import { Npc } from "@Glibs/actors/npc/npc";
+import { DefaultPosition } from "../index";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
@@ -16,6 +18,7 @@ export default class PlayState implements IGameMode {
         private eventCtrl: IEventController,
         private camera: Camera,
         private player: Player,
+        private npc: Npc,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         private taskObj: ILoop[] = [],
         private phyObj: IPhysicsObject[] = [],
@@ -23,6 +26,10 @@ export default class PlayState implements IGameMode {
 
     }
     async Init() {
+        this.npc.Visible = true
+        this.npc.Pos.copy(DefaultPosition)
+        this.npc.Pos.x += 10
+
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
 
