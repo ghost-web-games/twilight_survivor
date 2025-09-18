@@ -1,0 +1,533 @@
+export class KayKitResourceCopperBarFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperBar}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Bar.fbx") }
+}
+
+export class KayKitResourceCopperBarsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperBars}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Bars.fbx") }
+}
+
+export class KayKitResourceCopperBarsStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperBarsStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Bars_Stack_Large.fbx") }
+}
+
+export class KayKitResourceCopperBarsStackMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperBarsStackMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Bars_Stack_Medium.fbx") }
+}
+
+export class KayKitResourceCopperBarsStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperBarsStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Bars_Stack_Small.fbx") }
+}
+
+export class KayKitResourceCopperNuggetLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperNuggetLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Nugget_Large.fbx") }
+}
+
+export class KayKitResourceCopperNuggetMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperNuggetMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Nugget_Medium.fbx") }
+}
+
+export class KayKitResourceCopperNuggetSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperNuggetSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Nugget_Small.fbx") }
+}
+
+export class KayKitResourceCopperNuggetsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceCopperNuggets}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Copper_Nuggets.fbx") }
+}
+
+export class KayKitResourceFuelABarrelFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelABarrel}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_A_Barrel.fbx") }
+}
+
+export class KayKitResourceFuelABarrelDirtyFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelABarrelDirty}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_A_Barrel_Dirty.fbx") }
+}
+
+export class KayKitResourceFuelABarrelsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelABarrels}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_A_Barrels.fbx") }
+}
+
+export class KayKitResourceFuelAJerrycanFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelAJerrycan}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_A_Jerrycan.fbx") }
+}
+
+export class KayKitResourceFuelBBarrelFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelBBarrel}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_B_Barrel.fbx") }
+}
+
+export class KayKitResourceFuelBBarrelDirtyFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelBBarrelDirty}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_B_Barrel_Dirty.fbx") }
+}
+
+export class KayKitResourceFuelBBarrelsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelBBarrels}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_B_Barrels.fbx") }
+}
+
+export class KayKitResourceFuelBJerrycanFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelBJerrycan}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_B_Jerrycan.fbx") }
+}
+
+export class KayKitResourceFuelCBarrelFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelCBarrel}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_C_Barrel.fbx") }
+}
+
+export class KayKitResourceFuelCBarrelDirtyFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelCBarrelDirty}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_C_Barrel_Dirty.fbx") }
+}
+
+export class KayKitResourceFuelCBarrelsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelCBarrels}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_C_Barrels.fbx") }
+}
+
+export class KayKitResourceFuelCJerrycanFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceFuelCJerrycan}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Fuel_C_Jerrycan.fbx") }
+}
+
+export class KayKitResourceGoldBarFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldBar}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Bar.fbx") }
+}
+
+export class KayKitResourceGoldBarsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldBars}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Bars.fbx") }
+}
+
+export class KayKitResourceGoldBarsStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldBarsStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Bars_Stack_Large.fbx") }
+}
+
+export class KayKitResourceGoldBarsStackMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldBarsStackMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Bars_Stack_Medium.fbx") }
+}
+
+export class KayKitResourceGoldBarsStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldBarsStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Bars_Stack_Small.fbx") }
+}
+
+export class KayKitResourceGoldNuggetLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldNuggetLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Nugget_Large.fbx") }
+}
+
+export class KayKitResourceGoldNuggetMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldNuggetMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Nugget_Medium.fbx") }
+}
+
+export class KayKitResourceGoldNuggetSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldNuggetSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Nugget_Small.fbx") }
+}
+
+export class KayKitResourceGoldNuggetsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceGoldNuggets}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Gold_Nuggets.fbx") }
+}
+
+export class KayKitResourceIronBarFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronBar}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Bar.fbx") }
+}
+
+export class KayKitResourceIronBarsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronBars}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Bars.fbx") }
+}
+
+export class KayKitResourceIronBarsStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronBarsStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Bars_Stack_Large.fbx") }
+}
+
+export class KayKitResourceIronBarsStackMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronBarsStackMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Bars_Stack_Medium.fbx") }
+}
+
+export class KayKitResourceIronBarsStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronBarsStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Bars_Stack_Small.fbx") }
+}
+
+export class KayKitResourceIronNuggetLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronNuggetLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Nugget_Large.fbx") }
+}
+
+export class KayKitResourceIronNuggetMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronNuggetMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Nugget_Medium.fbx") }
+}
+
+export class KayKitResourceIronNuggetSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronNuggetSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Nugget_Small.fbx") }
+}
+
+export class KayKitResourceIronNuggetsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceIronNuggets}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Iron_Nuggets.fbx") }
+}
+
+export class KayKitResourcePalletWoodFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePalletWood}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Pallet_Wood.fbx") }
+}
+
+export class KayKitResourcePalletWoodCoveredAFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePalletWoodCoveredA}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Pallet_Wood_Covered_A.fbx") }
+}
+
+export class KayKitResourcePalletWoodCoveredBFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePalletWoodCoveredB}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Pallet_Wood_Covered_B.fbx") }
+}
+
+export class KayKitResourcePartsCogFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePartsCog}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Parts_Cog.fbx") }
+}
+
+export class KayKitResourcePartsPileLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePartsPileLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Parts_Pile_Large.fbx") }
+}
+
+export class KayKitResourcePartsPileMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePartsPileMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Parts_Pile_Medium.fbx") }
+}
+
+export class KayKitResourcePartsPileSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourcePartsPileSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Parts_Pile_Small.fbx") }
+}
+
+export class KayKitResourceSilverBarFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverBar}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Bar.fbx") }
+}
+
+export class KayKitResourceSilverBarsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverBars}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Bars.fbx") }
+}
+
+export class KayKitResourceSilverBarsStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverBarsStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Bars_Stack_Large.fbx") }
+}
+
+export class KayKitResourceSilverBarsStackMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverBarsStackMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Bars_Stack_Medium.fbx") }
+}
+
+export class KayKitResourceSilverBarsStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverBarsStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Bars_Stack_Small.fbx") }
+}
+
+export class KayKitResourceSilverNuggetLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverNuggetLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Nugget_Large.fbx") }
+}
+
+export class KayKitResourceSilverNuggetMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverNuggetMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Nugget_Medium.fbx") }
+}
+
+export class KayKitResourceSilverNuggetSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverNuggetSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Nugget_Small.fbx") }
+}
+
+export class KayKitResourceSilverNuggetsFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceSilverNuggets}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Silver_Nuggets.fbx") }
+}
+
+export class KayKitResourceStoneBrickFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceStoneBrick}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Stone_Brick.fbx") }
+}
+
+export class KayKitResourceStoneBricksStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceStoneBricksStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Stone_Bricks_Stack_Large.fbx") }
+}
+
+export class KayKitResourceStoneBricksStackMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceStoneBricksStackMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Stone_Bricks_Stack_Medium.fbx") }
+}
+
+export class KayKitResourceStoneBricksStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceStoneBricksStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Stone_Bricks_Stack_Small.fbx") }
+}
+
+export class KayKitResourceStoneChunksLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceStoneChunksLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Stone_Chunks_Large.fbx") }
+}
+
+export class KayKitResourceStoneChunksSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceStoneChunksSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Stone_Chunks_Small.fbx") }
+}
+
+export class KayKitResourceTextilesAFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceTextilesA}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Textiles_A.fbx") }
+}
+
+export class KayKitResourceTextilesBFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceTextilesB}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Textiles_B.fbx") }
+}
+
+export class KayKitResourceTextilesCFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceTextilesC}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Textiles_C.fbx") }
+}
+
+export class KayKitResourceTextilesStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceTextilesStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Textiles_Stack_Large.fbx") }
+}
+
+export class KayKitResourceTextilesStackLargeColoredFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceTextilesStackLargeColored}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Textiles_Stack_Large_Colored.fbx") }
+}
+
+export class KayKitResourceTextilesStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceTextilesStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Textiles_Stack_Small.fbx") }
+}
+
+export class KayKitResourceWoodLogAFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodLogA}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Log_A.fbx") }
+}
+
+export class KayKitResourceWoodLogBFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodLogB}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Log_B.fbx") }
+}
+
+export class KayKitResourceWoodLogStackFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodLogStack}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Log_Stack.fbx") }
+}
+
+export class KayKitResourceWoodPlankAFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodPlankA}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Plank_A.fbx") }
+}
+
+export class KayKitResourceWoodPlankBFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodPlankB}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Plank_B.fbx") }
+}
+
+export class KayKitResourceWoodPlankCFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodPlankC}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Plank_C.fbx") }
+}
+
+export class KayKitResourceWoodPlanksStackLargeFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodPlanksStackLarge}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Planks_Stack_Large.fbx") }
+}
+
+export class KayKitResourceWoodPlanksStackMediumFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodPlanksStackMedium}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Planks_Stack_Medium.fbx") }
+}
+
+export class KayKitResourceWoodPlanksStackSmallFab extends KayKitResourceFbxFab implements IAsset {
+    get Id() {return Char.KayKitResourceWoodPlanksStackSmall}
+    constructor(loader: Loader) { super(loader, "assets/kaykit/resources/fbx/Wood_Planks_Stack_Small.fbx") }
+}
+
+KayKitResourceCopperBar,
+KayKitResourceCopperBars,
+KayKitResourceCopperBarsStackLarge,
+KayKitResourceCopperBarsStackMedium,
+KayKitResourceCopperBarsStackSmall,
+KayKitResourceCopperNuggetLarge,
+KayKitResourceCopperNuggetMedium,
+KayKitResourceCopperNuggetSmall,
+KayKitResourceCopperNuggets,
+KayKitResourceFuelABarrel,
+KayKitResourceFuelABarrelDirty,
+KayKitResourceFuelABarrels,
+KayKitResourceFuelAJerrycan,
+KayKitResourceFuelBBarrel,
+KayKitResourceFuelBBarrelDirty,
+KayKitResourceFuelBBarrels,
+KayKitResourceFuelBJerrycan,
+KayKitResourceFuelCBarrel,
+KayKitResourceFuelCBarrelDirty,
+KayKitResourceFuelCBarrels,
+KayKitResourceFuelCJerrycan,
+KayKitResourceGoldBar,
+KayKitResourceGoldBars,
+KayKitResourceGoldBarsStackLarge,
+KayKitResourceGoldBarsStackMedium,
+KayKitResourceGoldBarsStackSmall,
+KayKitResourceGoldNuggetLarge,
+KayKitResourceGoldNuggetMedium,
+KayKitResourceGoldNuggetSmall,
+KayKitResourceGoldNuggets,
+KayKitResourceIronBar,
+KayKitResourceIronBars,
+KayKitResourceIronBarsStackLarge,
+KayKitResourceIronBarsStackMedium,
+KayKitResourceIronBarsStackSmall,
+KayKitResourceIronNuggetLarge,
+KayKitResourceIronNuggetMedium,
+KayKitResourceIronNuggetSmall,
+KayKitResourceIronNuggets,
+KayKitResourcePalletWood,
+KayKitResourcePalletWoodCoveredA,
+KayKitResourcePalletWoodCoveredB,
+KayKitResourcePartsCog,
+KayKitResourcePartsPileLarge,
+KayKitResourcePartsPileMedium,
+KayKitResourcePartsPileSmall,
+KayKitResourceSilverBar,
+KayKitResourceSilverBars,
+KayKitResourceSilverBarsStackLarge,
+KayKitResourceSilverBarsStackMedium,
+KayKitResourceSilverBarsStackSmall,
+KayKitResourceSilverNuggetLarge,
+KayKitResourceSilverNuggetMedium,
+KayKitResourceSilverNuggetSmall,
+KayKitResourceSilverNuggets,
+KayKitResourceStoneBrick,
+KayKitResourceStoneBricksStackLarge,
+KayKitResourceStoneBricksStackMedium,
+KayKitResourceStoneBricksStackSmall,
+KayKitResourceStoneChunksLarge,
+KayKitResourceStoneChunksSmall,
+KayKitResourceTextilesA,
+KayKitResourceTextilesB,
+KayKitResourceTextilesC,
+KayKitResourceTextilesStackLarge,
+KayKitResourceTextilesStackLargeColored,
+KayKitResourceTextilesStackSmall,
+KayKitResourceWoodLogA,
+KayKitResourceWoodLogB,
+KayKitResourceWoodLogStack,
+KayKitResourceWoodPlankA,
+KayKitResourceWoodPlankB,
+KayKitResourceWoodPlankC,
+KayKitResourceWoodPlanksStackLarge,
+KayKitResourceWoodPlanksStackMedium,
+KayKitResourceWoodPlanksStackSmall,
+this.fabClasses.set(Char.KayKitResourceCopperBar, KayKitResourceCopperBarFab);
+this.fabClasses.set(Char.KayKitResourceCopperBars, KayKitResourceCopperBarsFab);
+this.fabClasses.set(Char.KayKitResourceCopperBarsStackLarge, KayKitResourceCopperBarsStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceCopperBarsStackMedium, KayKitResourceCopperBarsStackMediumFab);
+this.fabClasses.set(Char.KayKitResourceCopperBarsStackSmall, KayKitResourceCopperBarsStackSmallFab);
+this.fabClasses.set(Char.KayKitResourceCopperNuggetLarge, KayKitResourceCopperNuggetLargeFab);
+this.fabClasses.set(Char.KayKitResourceCopperNuggetMedium, KayKitResourceCopperNuggetMediumFab);
+this.fabClasses.set(Char.KayKitResourceCopperNuggetSmall, KayKitResourceCopperNuggetSmallFab);
+this.fabClasses.set(Char.KayKitResourceCopperNuggets, KayKitResourceCopperNuggetsFab);
+this.fabClasses.set(Char.KayKitResourceFuelABarrel, KayKitResourceFuelABarrelFab);
+this.fabClasses.set(Char.KayKitResourceFuelABarrelDirty, KayKitResourceFuelABarrelDirtyFab);
+this.fabClasses.set(Char.KayKitResourceFuelABarrels, KayKitResourceFuelABarrelsFab);
+this.fabClasses.set(Char.KayKitResourceFuelAJerrycan, KayKitResourceFuelAJerrycanFab);
+this.fabClasses.set(Char.KayKitResourceFuelBBarrel, KayKitResourceFuelBBarrelFab);
+this.fabClasses.set(Char.KayKitResourceFuelBBarrelDirty, KayKitResourceFuelBBarrelDirtyFab);
+this.fabClasses.set(Char.KayKitResourceFuelBBarrels, KayKitResourceFuelBBarrelsFab);
+this.fabClasses.set(Char.KayKitResourceFuelBJerrycan, KayKitResourceFuelBJerrycanFab);
+this.fabClasses.set(Char.KayKitResourceFuelCBarrel, KayKitResourceFuelCBarrelFab);
+this.fabClasses.set(Char.KayKitResourceFuelCBarrelDirty, KayKitResourceFuelCBarrelDirtyFab);
+this.fabClasses.set(Char.KayKitResourceFuelCBarrels, KayKitResourceFuelCBarrelsFab);
+this.fabClasses.set(Char.KayKitResourceFuelCJerrycan, KayKitResourceFuelCJerrycanFab);
+this.fabClasses.set(Char.KayKitResourceGoldBar, KayKitResourceGoldBarFab);
+this.fabClasses.set(Char.KayKitResourceGoldBars, KayKitResourceGoldBarsFab);
+this.fabClasses.set(Char.KayKitResourceGoldBarsStackLarge, KayKitResourceGoldBarsStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceGoldBarsStackMedium, KayKitResourceGoldBarsStackMediumFab);
+this.fabClasses.set(Char.KayKitResourceGoldBarsStackSmall, KayKitResourceGoldBarsStackSmallFab);
+this.fabClasses.set(Char.KayKitResourceGoldNuggetLarge, KayKitResourceGoldNuggetLargeFab);
+this.fabClasses.set(Char.KayKitResourceGoldNuggetMedium, KayKitResourceGoldNuggetMediumFab);
+this.fabClasses.set(Char.KayKitResourceGoldNuggetSmall, KayKitResourceGoldNuggetSmallFab);
+this.fabClasses.set(Char.KayKitResourceGoldNuggets, KayKitResourceGoldNuggetsFab);
+this.fabClasses.set(Char.KayKitResourceIronBar, KayKitResourceIronBarFab);
+this.fabClasses.set(Char.KayKitResourceIronBars, KayKitResourceIronBarsFab);
+this.fabClasses.set(Char.KayKitResourceIronBarsStackLarge, KayKitResourceIronBarsStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceIronBarsStackMedium, KayKitResourceIronBarsStackMediumFab);
+this.fabClasses.set(Char.KayKitResourceIronBarsStackSmall, KayKitResourceIronBarsStackSmallFab);
+this.fabClasses.set(Char.KayKitResourceIronNuggetLarge, KayKitResourceIronNuggetLargeFab);
+this.fabClasses.set(Char.KayKitResourceIronNuggetMedium, KayKitResourceIronNuggetMediumFab);
+this.fabClasses.set(Char.KayKitResourceIronNuggetSmall, KayKitResourceIronNuggetSmallFab);
+this.fabClasses.set(Char.KayKitResourceIronNuggets, KayKitResourceIronNuggetsFab);
+this.fabClasses.set(Char.KayKitResourcePalletWood, KayKitResourcePalletWoodFab);
+this.fabClasses.set(Char.KayKitResourcePalletWoodCoveredA, KayKitResourcePalletWoodCoveredAFab);
+this.fabClasses.set(Char.KayKitResourcePalletWoodCoveredB, KayKitResourcePalletWoodCoveredBFab);
+this.fabClasses.set(Char.KayKitResourcePartsCog, KayKitResourcePartsCogFab);
+this.fabClasses.set(Char.KayKitResourcePartsPileLarge, KayKitResourcePartsPileLargeFab);
+this.fabClasses.set(Char.KayKitResourcePartsPileMedium, KayKitResourcePartsPileMediumFab);
+this.fabClasses.set(Char.KayKitResourcePartsPileSmall, KayKitResourcePartsPileSmallFab);
+this.fabClasses.set(Char.KayKitResourceSilverBar, KayKitResourceSilverBarFab);
+this.fabClasses.set(Char.KayKitResourceSilverBars, KayKitResourceSilverBarsFab);
+this.fabClasses.set(Char.KayKitResourceSilverBarsStackLarge, KayKitResourceSilverBarsStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceSilverBarsStackMedium, KayKitResourceSilverBarsStackMediumFab);
+this.fabClasses.set(Char.KayKitResourceSilverBarsStackSmall, KayKitResourceSilverBarsStackSmallFab);
+this.fabClasses.set(Char.KayKitResourceSilverNuggetLarge, KayKitResourceSilverNuggetLargeFab);
+this.fabClasses.set(Char.KayKitResourceSilverNuggetMedium, KayKitResourceSilverNuggetMediumFab);
+this.fabClasses.set(Char.KayKitResourceSilverNuggetSmall, KayKitResourceSilverNuggetSmallFab);
+this.fabClasses.set(Char.KayKitResourceSilverNuggets, KayKitResourceSilverNuggetsFab);
+this.fabClasses.set(Char.KayKitResourceStoneBrick, KayKitResourceStoneBrickFab);
+this.fabClasses.set(Char.KayKitResourceStoneBricksStackLarge, KayKitResourceStoneBricksStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceStoneBricksStackMedium, KayKitResourceStoneBricksStackMediumFab);
+this.fabClasses.set(Char.KayKitResourceStoneBricksStackSmall, KayKitResourceStoneBricksStackSmallFab);
+this.fabClasses.set(Char.KayKitResourceStoneChunksLarge, KayKitResourceStoneChunksLargeFab);
+this.fabClasses.set(Char.KayKitResourceStoneChunksSmall, KayKitResourceStoneChunksSmallFab);
+this.fabClasses.set(Char.KayKitResourceTextilesA, KayKitResourceTextilesAFab);
+this.fabClasses.set(Char.KayKitResourceTextilesB, KayKitResourceTextilesBFab);
+this.fabClasses.set(Char.KayKitResourceTextilesC, KayKitResourceTextilesCFab);
+this.fabClasses.set(Char.KayKitResourceTextilesStackLarge, KayKitResourceTextilesStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceTextilesStackLargeColored, KayKitResourceTextilesStackLargeColoredFab);
+this.fabClasses.set(Char.KayKitResourceTextilesStackSmall, KayKitResourceTextilesStackSmallFab);
+this.fabClasses.set(Char.KayKitResourceWoodLogA, KayKitResourceWoodLogAFab);
+this.fabClasses.set(Char.KayKitResourceWoodLogB, KayKitResourceWoodLogBFab);
+this.fabClasses.set(Char.KayKitResourceWoodLogStack, KayKitResourceWoodLogStackFab);
+this.fabClasses.set(Char.KayKitResourceWoodPlankA, KayKitResourceWoodPlankAFab);
+this.fabClasses.set(Char.KayKitResourceWoodPlankB, KayKitResourceWoodPlankBFab);
+this.fabClasses.set(Char.KayKitResourceWoodPlankC, KayKitResourceWoodPlankCFab);
+this.fabClasses.set(Char.KayKitResourceWoodPlanksStackLarge, KayKitResourceWoodPlanksStackLargeFab);
+this.fabClasses.set(Char.KayKitResourceWoodPlanksStackMedium, KayKitResourceWoodPlanksStackMediumFab);
+this.fabClasses.set(Char.KayKitResourceWoodPlanksStackSmall, KayKitResourceWoodPlanksStackSmallFab);
+KayKitResourceCopperBarFab, KayKitResourceCopperBarsFab, KayKitResourceCopperBarsStackLargeFab, KayKitResourceCopperBarsStackMediumFab, KayKitResourceCopperBarsStackSmallFab, KayKitResourceCopperNuggetLargeFab, KayKitResourceCopperNuggetMediumFab, KayKitResourceCopperNuggetSmallFab, KayKitResourceCopperNuggetsFab, KayKitResourceFuelABarrelFab, KayKitResourceFuelABarrelDirtyFab, KayKitResourceFuelABarrelsFab, KayKitResourceFuelAJerrycanFab, KayKitResourceFuelBBarrelFab, KayKitResourceFuelBBarrelDirtyFab, KayKitResourceFuelBBarrelsFab, KayKitResourceFuelBJerrycanFab, KayKitResourceFuelCBarrelFab, KayKitResourceFuelCBarrelDirtyFab, KayKitResourceFuelCBarrelsFab, KayKitResourceFuelCJerrycanFab, KayKitResourceGoldBarFab, KayKitResourceGoldBarsFab, KayKitResourceGoldBarsStackLargeFab, KayKitResourceGoldBarsStackMediumFab, KayKitResourceGoldBarsStackSmallFab, KayKitResourceGoldNuggetLargeFab, KayKitResourceGoldNuggetMediumFab, KayKitResourceGoldNuggetSmallFab, KayKitResourceGoldNuggetsFab, KayKitResourceIronBarFab, KayKitResourceIronBarsFab, KayKitResourceIronBarsStackLargeFab, KayKitResourceIronBarsStackMediumFab, KayKitResourceIronBarsStackSmallFab, KayKitResourceIronNuggetLargeFab, KayKitResourceIronNuggetMediumFab, KayKitResourceIronNuggetSmallFab, KayKitResourceIronNuggetsFab, KayKitResourcePalletWoodFab, KayKitResourcePalletWoodCoveredAFab, KayKitResourcePalletWoodCoveredBFab, KayKitResourcePartsCogFab, KayKitResourcePartsPileLargeFab, KayKitResourcePartsPileMediumFab, KayKitResourcePartsPileSmallFab, KayKitResourceSilverBarFab, KayKitResourceSilverBarsFab, KayKitResourceSilverBarsStackLargeFab, KayKitResourceSilverBarsStackMediumFab, KayKitResourceSilverBarsStackSmallFab, KayKitResourceSilverNuggetLargeFab, KayKitResourceSilverNuggetMediumFab, KayKitResourceSilverNuggetSmallFab, KayKitResourceSilverNuggetsFab, KayKitResourceStoneBrickFab, KayKitResourceStoneBricksStackLargeFab, KayKitResourceStoneBricksStackMediumFab, KayKitResourceStoneBricksStackSmallFab, KayKitResourceStoneChunksLargeFab, KayKitResourceStoneChunksSmallFab, KayKitResourceTextilesAFab, KayKitResourceTextilesBFab, KayKitResourceTextilesCFab, KayKitResourceTextilesStackLargeFab, KayKitResourceTextilesStackLargeColoredFab, KayKitResourceTextilesStackSmallFab, KayKitResourceWoodLogAFab, KayKitResourceWoodLogBFab, KayKitResourceWoodLogStackFab, KayKitResourceWoodPlankAFab, KayKitResourceWoodPlankBFab, KayKitResourceWoodPlankCFab, KayKitResourceWoodPlanksStackLargeFab, KayKitResourceWoodPlanksStackMediumFab, KayKitResourceWoodPlanksStackSmallFab, 

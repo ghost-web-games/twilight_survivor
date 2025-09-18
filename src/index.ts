@@ -39,8 +39,12 @@ import CustomGround from '@Glibs/world/ground/customground'
 import { Npc } from '@Glibs/actors/npc/npc'
 import OpeningState from './gamestates/openingstate'
 import { NpcCtrl } from '@Glibs/actors/npc/npcctrl'
+import { DialogueManager } from '@Glibs/systems/alarm/dialoguemgr'
+import { QuestManager } from '@Glibs/systems/quests/questmgr'
+import { newQuestDefs } from './data/questdata'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
+export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 10)
 
 export class TwilightSurvivor {
     scene = new THREE.Scene()
@@ -79,23 +83,25 @@ export class TwilightSurvivor {
     light = new DefaultLights(this.scene)
     worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
 
+    dialogue = new DialogueManager(this.eventCtrl)
     input = new Input(this.eventCtrl)
+    quest = new QuestManager(this.eventCtrl)
 
     constructor() {
         console.log('Twilight Survivor')
         InitActionRegistry(this.eventCtrl, this.scene)
 
-        THREE.ColorManagement.enabled = true
-        this.renderer.outputColorSpace = THREE.SRGBColorSpace
-        this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-        this.renderer.toneMappingExposure = .8
-        this.renderer.shadowMap.enabled = true
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        this.renderer.setSize(window.innerWidth, window.innerHeight)
-        const pixel = (window.devicePixelRatio >= 2) ? window.devicePixelRatio / 2 : window.devicePixelRatio
-        const minPixel = Math.min(pixel, 1.5)
-        this.renderer.setPixelRatio(minPixel);
-
+        THREE.ColorManagement.enabled = true;
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        this.renderer.toneMapping = THREE.ReinhardToneMapping; // Exposure가 실제로 적용됨
+        this.renderer.toneMappingExposure = 2.5;              // 1.7~2.2 사이에서 취향 미세조정
+        
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        const pixel = (window.devicePixelRatio >= 2) ? window.devicePixelRatio / 2 : window.devicePixelRatio;
+        this.renderer.setPixelRatio(Math.min(pixel, 1.0));
 
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             document.body.appendChild(this.renderer.domElement)
@@ -113,6 +119,7 @@ export class TwilightSurvivor {
         document.addEventListener("fullscreenchange", this.resize.bind(this));
         document.addEventListener("webkitfullscreenchange", this.resize.bind(this)); // iOS 대응
 
+        this.quest.addQuestDefinitions(newQuestDefs)
         this.resize()
     }
     async init() {
@@ -284,7 +291,7 @@ export class TwilightSurvivor {
             new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], 
                 [stormRain, campfire], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.camera, this.player, this.npc, [], 
+            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.quest, [], 
                 [stormRain, campfire], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
