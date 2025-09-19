@@ -41,7 +41,10 @@ import OpeningState from './gamestates/openingstate'
 import { NpcCtrl } from '@Glibs/actors/npc/npcctrl'
 import { DialogueManager } from '@Glibs/systems/alarm/dialoguemgr'
 import { QuestManager } from '@Glibs/systems/quests/questmgr'
-import { newQuestDefs } from './data/questdata'
+import { newQuestDefs } from './localquests/questdata'
+import Confetti from '@Glibs/ux/confetti/confetti'
+import { QuestId } from '@Glibs/systems/quests/questdef'
+import { LocalQuestManager } from './localquests/localquestmgr'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 10)
@@ -86,6 +89,8 @@ export class TwilightSurvivor {
     dialogue = new DialogueManager(this.eventCtrl)
     input = new Input(this.eventCtrl)
     quest = new QuestManager(this.eventCtrl)
+    confetti = new Confetti(this.eventCtrl, document.body)
+    localQuest  = new LocalQuestManager(this.eventCtrl)
 
     constructor() {
         console.log('Twilight Survivor')
