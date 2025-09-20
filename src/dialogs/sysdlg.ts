@@ -26,8 +26,7 @@ export default class SystemDialog {
         })
         tap.AddChildDom(woodModal.GetContentElement())
 
-        const loadBtn = new GameButton()
-        loadBtn.RenderHTML({
+        const loadBtn = new GameButton({
             title: "Load", click: async () => {
                 this.dialog.RenderHtml("Load Ai Card", "")
                 this.dialog.Show()
@@ -35,8 +34,7 @@ export default class SystemDialog {
         })
         woodModal.AddChild(loadBtn)
 
-        const downBtn = new GameButton()
-        downBtn.RenderHTML({
+        const downBtn = new GameButton({
             title: "Upload", click: () => {
                 this.dialog.RenderHtml("Upload Ai Card", "")
                 this.dialog.Show()

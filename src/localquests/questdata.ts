@@ -3,12 +3,12 @@ export const newQuestDefs = {
         "title": "나무 수집",
         "description": "불을 피우기 위한 나무가 필요합니다.",
         "startNpc": "npc_guard",
-        "endNpc": "npc_guard",
+        "endNpc": "",
         "preconditions": {
             "level": 1
         },
         "objectives": [
-            { "type": "pickup", "targetId": "Logs", "amount": 5 }
+            { "type": "pickup", "targetId": "Logs", "amount": 2 }
         ],
         "rewards": {
             "experience": 100,
@@ -16,9 +16,9 @@ export const newQuestDefs = {
     },
     "Q004_OPENING_CAMPFIRE": {
         "title": "꺼진 모닥불 찾기",
-        "description": "불을 피우기 모닥불을 찾아야합니다..",
+        "description": "불을 피우기 위해 모닥불을 찾아야합니다..",
         "startNpc": "npc_guard",
-        "endNpc": "npc_guard",
+        "endNpc": "",
         "preconditions": {
             "level": 1
         },

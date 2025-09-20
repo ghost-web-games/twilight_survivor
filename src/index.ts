@@ -45,6 +45,8 @@ import { newQuestDefs } from './localquests/questdata'
 import Confetti from '@Glibs/ux/confetti/confetti'
 import { QuestId } from '@Glibs/systems/quests/questdef'
 import { LocalQuestManager } from './localquests/localquestmgr'
+import QuestDialog from './localquests/questdlg'
+import MapFactory from './mapfactory'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 10)
@@ -85,12 +87,14 @@ export class TwilightSurvivor {
 
     light = new DefaultLights(this.scene)
     worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
+    mapFab = new MapFactory(this.eventCtrl, this.worldMap, this.scene)
 
     dialogue = new DialogueManager(this.eventCtrl)
     input = new Input(this.eventCtrl)
-    quest = new QuestManager(this.eventCtrl)
+    quest = new QuestManager(this.eventCtrl, newQuestDefs)
+    questDlg = new QuestDialog(this.eventCtrl, this.quest, this.invenFab)
     confetti = new Confetti(this.eventCtrl, document.body)
-    localQuest  = new LocalQuestManager(this.eventCtrl)
+    localQuest  = new LocalQuestManager(this.eventCtrl, this.quest, this.questDlg)
 
     constructor() {
         console.log('Twilight Survivor')
@@ -124,94 +128,10 @@ export class TwilightSurvivor {
         document.addEventListener("fullscreenchange", this.resize.bind(this));
         document.addEventListener("webkitfullscreenchange", this.resize.bind(this)); // iOS 대응
 
-        this.quest.addQuestDefinitions(newQuestDefs)
         this.resize()
     }
     async init() {
-        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
-            const map = await this.worldMap.MakeMapObject()
-            this.scene.add(map)
-            const beach = await this.worldMap.MakeMapObject(MapEntryType.Beach, map)
-            const blendedMap = this.worldMap.GetMapObject() as CustomGround
-            const placer = new ObjectPlacer()
-            const groundMesh = blendedMap.obj
-            const dataTexture = blendedMap.blendMap
-            let occupied: PlacedUV[] = []
-
-            // Pass 1: 바위 배치 (흙 지역에만)
-            const rockResult = placer.generate(groundMesh, dataTexture, {
-                seed: 100,
-                pattern: 'rock',
-                density: 1.0,
-                minRadius: 2.8,
-                numKinds: 5,
-                scaleMin: 0.7,
-                scaleRange: 0.8,
-                occupiedUVs: occupied, // 처음에는 빈 배열
-            });
-            occupied = rockResult.occupiedUVs; // 점유 공간 업데이트
-            // console.log(rockResult.placements)
-            this.autoMap(rockResult.placements, [1, 1], false, Char.QuaterniusNatureRockpathRoundSmall1, MapEntryType.InstancedVegetation)
-
-            // Pass 2: 나무 배치 (식생 지역, 군집)
-            const treeResult = placer.generate(groundMesh, dataTexture, {
-                seed: 200,
-                pattern: 'tree',
-                density: 2.0,
-                minRadius: 2.5,
-                numKinds: 5,
-                scaleMin: 0.9,
-                scaleRange: 0.6,
-                occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
-            });
-            occupied = treeResult.occupiedUVs; // 점유 공간 다시 업데이트
-            // console.log(treeResult.placements)
-            const trees = this.autoMap(treeResult.placements, [1, 1], true, Char.QuaterniusNatureDeadtree1)
-            this.eventCtrl.SendEventMessage(EventTypes.RegisterPhysic, trees, true)
-            const pResult = placer.generate(groundMesh, dataTexture, {
-                seed: 300,
-                pattern: 'flower',
-                density: 8.8,
-                minRadius: 0.5,
-                numKinds: 5,
-                scaleMin: 0.8,
-                scaleRange: 0.6,
-                occupiedUVs: occupied,
-            });
-            occupied = pResult.occupiedUVs;
-            // console.log(plantResult.placements)
-            this.autoMap(pResult.placements, [1, 3], true, Char.QuaterniusNatureGrassCommonShort)
-
-            // pass Edge
-            const pEdgeResult = placer.generate(groundMesh, dataTexture, {
-                seed: 500,
-                pattern: 'edge',
-                density: 5.8,
-                minRadius: 0.5,
-                numKinds: 3,
-                scaleMin: 4,
-                scaleRange: 8,
-                occupiedUVs: occupied,
-            });
-            occupied = pEdgeResult.occupiedUVs;
-            // console.log(plantResult.placements)
-            const treesEdge = this.autoMap(pEdgeResult.placements, [1, 3], true, Char.QuaterniusNatureRockMedium1)
-
-            // Pass 3: 식물 배치 (식생 지역, 군집)
-            const plantResult = placer.generate(groundMesh, dataTexture, {
-                seed: 300,
-                pattern: 'flower',
-                density: 8.8,
-                minRadius: 0.5,
-                numKinds: 5,
-                scaleMin: 0.8,
-                scaleRange: 0.6,
-                occupiedUVs: occupied,
-            });
-            occupied = plantResult.occupiedUVs;
-            // console.log(plantResult.placements)
-            this.autoMap(plantResult.placements, [8, 16], true)
-        })
+        await this.mapFab.MakeMap()
 
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             await this.GltfLoad()
@@ -226,35 +146,7 @@ export class TwilightSurvivor {
             this.loading.startProcessing(1); // 각 작업 사이에 300ms 지연
         });
     }
-    autoMap(objs: PlacementInfo[], countRange?: number[], wind: boolean = true, startCharId?: Char, maptype = MapEntryType.WindyInstancedVegetation) {
-        const res = new THREE.Group()
-        const f = objs.reduce((acc, current) => {
-            const key = current.kind
-            if (!acc[key]) acc[key] = []
-            acc[key].push(current)
-            return acc
-        }, {} as Record<number, PlacementInfo[]>)
-        Object.values(f).forEach(async (objs) => {
-            const charId = (startCharId) ? startCharId + objs[0].kind : undefined
-            const mesh = await this.worldMap.MakeMapObject(maptype,
-                {
-                    transforms: objs, id: charId, config: {
-                        cluster: {
-                            enabled: true,
-                            countRange: countRange,
-                            radius: 1.0,
-                            distribution: "uniform",
-                            posJitterY: [0, 0.03],
-                            rotJitterYDeg: 20,
-                            scaleJitter: [0.9, 1.18],
-                        }
-                    }
-                })
-            res.add(mesh)
-        })
-        this.scene.add(res)
-        return res
-    }
+    
     resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight
         this.camera.resize(window.innerWidth, window.innerHeight)
@@ -279,25 +171,19 @@ export class TwilightSurvivor {
     async InitScene() {
         const stormRain = await this.worldMap.MakeMapObject(MapEntryType.Rain, {})
         stormRain.Mesh.position.set(0, 0, -100)
-        const defaultPos = DefaultPosition.clone()
-        defaultPos.x += 10
-        defaultPos.y = 0
-        defaultPos.z += 10
-
-        const campfire = await this.worldMap.MakeMapObject(MapEntryType.Interactive, { type: Char.None, position: defaultPos, boxType: "campfire" })
 
         this.gamecenter.RegisterGameMode("titlemode",
             new TitleState(this.eventCtrl, this.camera, this.player, this.playerCtrl,
                 [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
-                this.scene, this.camera, [], [stormRain, campfire], [this.player,]))
+                this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("opening",
             new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], 
-                [stormRain, campfire], [this.player, this.npc]))
+                [stormRain], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
             new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.quest, [], 
-                [stormRain, campfire], [this.player, this.npc]))
+                [stormRain], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }

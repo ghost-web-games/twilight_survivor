@@ -12,6 +12,7 @@ import { DefaultPosition } from "../index";
 import { KeyType } from "@Glibs/types/eventtypes";
 import { DialogueManager } from "@Glibs/systems/alarm/dialoguemgr";
 import { QuestManager } from "@Glibs/systems/quests/questmgr";
+import { QuestId } from "@Glibs/systems/quests/questdef";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
@@ -63,6 +64,31 @@ export default class PlayState implements IGameMode {
             },
         ];
         this.dialogue.runScript(introScript)
+        const logScript = [
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 이런 불이 꺼져있어!" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 이대로 있으면 어둠에 삼켜질꺼야" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 나무를 찾아야돼!" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 살아있는 나무를 찾아!!" },
+            { type: 'action', func: () => {
+                this.quest.startQuest("Q003_OPENING_GET_LOGS")
+            }},
+        ];
+        const fireScript = [
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 이제 불을 켤수 있어!!" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 모닥불로 다시 돌아가!" },
+        ];
+        this.eventCtrl.RegisterEventListener(EventTypes.QuestStateChanged, (ret: { questId: QuestId, status: string }) => {
+            if(ret.status !== "COMPLETED") return
+            switch(ret.questId) {
+                case "Q004_OPENING_CAMPFIRE": {
+                    this.dialogue.runScript(logScript)
+                    break;
+                }
+                case "Q003_OPENING_GET_LOGS": {
+                    break;
+                }
+            }
+        })
     }
     Uninit(): void {
     }
