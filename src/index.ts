@@ -47,9 +47,11 @@ import { QuestId } from '@Glibs/systems/quests/questdef'
 import { LocalQuestManager } from './localquests/localquestmgr'
 import QuestDialog from './localquests/questdlg'
 import MapFactory from './mapfactory'
+import ProgressBarHtml from '@Glibs/ux/progress/progressbarhtml'
+import CampfireCtrl from './gameobjects/campfirectrl'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
-export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 10)
+export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
 
 export class TwilightSurvivor {
     scene = new THREE.Scene()
@@ -61,6 +63,7 @@ export class TwilightSurvivor {
 
     loading = new WheelLoader(this.eventCtrl)
     spinner = new Spinning(this.eventCtrl)
+    progrss = new ProgressBarHtml(this.eventCtrl)
 
     helper = new Helper(this.scene, this.eventCtrl)
     loader = new Loader()
@@ -95,6 +98,9 @@ export class TwilightSurvivor {
     questDlg = new QuestDialog(this.eventCtrl, this.quest, this.invenFab)
     confetti = new Confetti(this.eventCtrl, document.body)
     localQuest  = new LocalQuestManager(this.eventCtrl, this.quest, this.questDlg)
+    campctrl = new CampfireCtrl(this.eventCtrl, this.invenFab.inven, this.player, CampfierPos)
+
+    fog = new THREE.FogExp2(0x87ceeb, 0.0025 * 5);
 
     constructor() {
         console.log('Twilight Survivor')
@@ -118,8 +124,7 @@ export class TwilightSurvivor {
             const sky = this.worldMap.MakeSky(this.light)
             this.scene.add(sky)
 
-            const fogColor = 0x87ceeb
-            this.scene.fog = new THREE.FogExp2(fogColor, 0.0025);
+            this.scene.fog = this.fog
             this.font.fontCss(FontType.Fredoka)
         })
 
@@ -182,8 +187,8 @@ export class TwilightSurvivor {
             new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], 
                 [stormRain], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.quest, [], 
-                [stormRain], [this.player, this.npc]))
+            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl, 
+                this.quest, this.campctrl, [], [stormRain], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }
@@ -198,7 +203,7 @@ export class TwilightSurvivor {
     accTime = 0
     render() {
         const time = this.clock.getDelta()
-        const delta = (time > 1) ? 1 : time
+        const delta = Math.min(1, time)
         this.accTime += delta
 
         this.gamecenter.Renderer(this.pp, delta)

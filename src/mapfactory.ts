@@ -6,7 +6,7 @@ import CustomGround from "@Glibs/world/ground/customground";
 import { ObjectPlacer, PlacedUV, PlacementInfo } from "@Glibs/world/worldmap/autoobjectplacer";
 import WorldMap from "@Glibs/world/worldmap/worldmap";
 import { Char } from '@Glibs/types/assettypes';
-import { DefaultPosition } from './index';
+import { CampfierPos, DefaultPosition } from './index';
 
 export default class MapFactory {
     placer = new ObjectPlacer()
@@ -43,7 +43,8 @@ export default class MapFactory {
             });
             occupied.push(...rockResult.occupiedUVs); // 점유 공간 업데이트
             // console.log(rockResult.placements)
-            this.autoMap(rockResult.placements, [1, 1], false, Char.QuaterniusNatureRockpathRoundSmall1, MapEntryType.InstancedVegetation)
+            this.autoMap(rockResult.placements, { countRange: [1, 1], windEnabled: false, type: MapEntryType.InstancedVegetation }, 
+                Char.QuaterniusNatureRockpathRoundSmall1)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
 
@@ -60,7 +61,7 @@ export default class MapFactory {
             });
             occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트
             // console.log(treeResult.placements)
-            const trees = this.autoMap(treeResult.placements, [1, 1], true, Char.QuaterniusNatureDeadtree1)
+            const trees = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureDeadtree1)
             this.eventCtrl.SendEventMessage(EventTypes.RegisterPhysic, trees, true)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
@@ -76,7 +77,7 @@ export default class MapFactory {
             });
             occupied.push(...pResult.occupiedUVs);
             // console.log(plantResult.placements)
-            this.autoMap(pResult.placements, [1, 3], true, Char.QuaterniusNatureGrassCommonShort)
+            this.autoMap(pResult.placements, { countRange: [1, 3] }, Char.QuaterniusNatureGrassCommonShort)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             // pass Edge
@@ -92,7 +93,8 @@ export default class MapFactory {
             });
             occupied.push(...pEdgeResult.occupiedUVs);
             // console.log(plantResult.placements)
-            const treesEdge = this.autoMap(pEdgeResult.placements, [1, 3], true, Char.QuaterniusNatureRockMedium1)
+            const treesEdge = this.autoMap(pEdgeResult.placements, { countRange: [1, 3], 
+                lodEnabled: false, cullingEnable: false, windEnabled: false  }, Char.QuaterniusNatureRockMedium1)
 
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
@@ -109,18 +111,14 @@ export default class MapFactory {
             });
             occupied = plantResult.occupiedUVs;
             // console.log(plantResult.placements)
-            this.autoMap(plantResult.placements, [8, 16], true)
+            this.autoMap(plantResult.placements, { countRange: [8, 16], far: 100 })
         })
     }
     async makeInteractive(map: CustomGround) {
         const groundMesh = map.obj
         const dataTexture = map.blendMap
-        const defaultPos = DefaultPosition.clone()
-        defaultPos.x += 10
-        defaultPos.y = 0
-        defaultPos.z += 40
-        await this.worldMap.MakeMapObject(MapEntryType.Interactive, { type: Char.None, position: defaultPos, boxType: "campfire" })
-        const uv = this.getUvOnPlane(defaultPos, map.obj)
+        await this.worldMap.MakeMapObject(MapEntryType.Interactive, { type: Char.None, position: CampfierPos, boxType: "campfire" })
+        const uv = this.getUvOnPlane(CampfierPos, map.obj)
         if (uv) map.Click(uv)
 
         const ret = this.placer.generate(groundMesh, dataTexture, {
@@ -150,7 +148,11 @@ export default class MapFactory {
         })
         return ret.occupiedUVs
     }
-    autoMap(objs: PlacementInfo[], countRange?: number[], wind: boolean = true, startCharId?: Char, maptype = MapEntryType.WindyInstancedVegetation) {
+    autoMap(objs: PlacementInfo[], {
+        lodEnabled = true, near = 20, far = 50, minDensity = 0.0005, windEnabled = true ,
+        cullingEnable = true, countRange = [1, 3], compactionEnabled = true, type = MapEntryType.WindyInstancedVegetation
+    } = {}, startCharId?: Char, 
+    ) {
         const res = new THREE.Group()
         const f = objs.reduce((acc, current) => {
             const key = current.kind
@@ -160,7 +162,7 @@ export default class MapFactory {
         }, {} as Record<number, PlacementInfo[]>)
         Object.values(f).forEach(async (objs) => {
             const charId = (startCharId) ? startCharId + objs[0].kind : undefined
-            const mesh = await this.worldMap.MakeMapObject(maptype,
+            const mesh = await this.worldMap.MakeMapObject(type,
                 {
                     transforms: objs, id: charId, config: {
                         cluster: {
@@ -171,7 +173,17 @@ export default class MapFactory {
                             posJitterY: [0, 0.03],
                             rotJitterYDeg: 20,
                             scaleJitter: [0.9, 1.18],
-                        }
+                        },
+                        lod: {
+                            enabled: lodEnabled, near, far, minDensity,
+                        },
+                        culling: {
+                            enable: cullingEnable,
+                        },
+                        hardMode: {
+                            compactionEnabled
+                        },
+                        windEnabled
                     }
                 })
             res.add(mesh)
