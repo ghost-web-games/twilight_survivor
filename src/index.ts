@@ -49,6 +49,7 @@ import QuestDialog from './localquests/questdlg'
 import MapFactory from './mapfactory'
 import ProgressBarHtml from '@Glibs/ux/progress/progressbarhtml'
 import CampfireCtrl from './gameobjects/campfirectrl'
+import DayNightRig from '@Glibs/world/sky/daynightrig'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -123,6 +124,7 @@ export class TwilightSurvivor {
 
             const sky = this.worldMap.MakeSky(this.light)
             this.scene.add(sky)
+            new DayNightRig(this.eventCtrl, sky, this.light, this.renderer, { auto: false })
 
             this.scene.fog = this.fog
             this.font.fontCss(FontType.Fredoka)

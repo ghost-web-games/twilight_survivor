@@ -3,6 +3,7 @@ import { QuestId } from "@Glibs/systems/quests/questdef";
 import { QuestManager } from "@Glibs/systems/quests/questmgr";
 import { EventTypes } from "@Glibs/types/globaltypes";
 import QuestDialog from "./questdlg";
+import { QuestLocalId } from "./questdata";
 
 export class LocalQuestManager {
     constructor(
@@ -24,5 +25,11 @@ export class LocalQuestManager {
                 this.questDlg.show()
             }
         })
+        // Local Quest Complete
+        this.eventCtrl.RegisterEventListener(EventTypes.CampfireCtrl, (fireAmount: number) => {
+            if (this.quest.getQuestStatus(QuestLocalId.Q005_FIRE_CAMPFIRE) != "ACTIVE") return
+            if (fireAmount > 0) this.quest.handleGameEvent({ type: "activate", targetId: "campfire" })
+        })
+
     }
 }

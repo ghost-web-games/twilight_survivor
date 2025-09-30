@@ -62,7 +62,6 @@ export default class MapFactory {
             occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트
             // console.log(treeResult.placements)
             const trees = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureDeadtree1)
-            this.eventCtrl.SendEventMessage(EventTypes.RegisterPhysic, trees, true)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             const pResult = this.placer.generate(groundMesh, dataTexture, {
