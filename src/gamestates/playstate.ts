@@ -16,6 +16,7 @@ import { QuestId } from "@Glibs/systems/quests/questdef";
 import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import CampfireCtrl from "../gameobjects/campfirectrl";
 import { QuestLocalId } from "../localquests/questdata";
+import { RainStorm } from "@Glibs/world/rain/rainstorm";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
@@ -29,6 +30,7 @@ export default class PlayState implements IGameMode {
         private playerCtrl: PlayerCtrl,
         private quest: QuestManager,
         private campCtrl: CampfireCtrl,
+        private stormRain: RainStorm,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         private taskObj: ILoop[] = [],
         private phyObj: IPhysicsObject[] = [],
@@ -43,6 +45,7 @@ export default class PlayState implements IGameMode {
 
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
         this.campCtrl.init()
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoop, this.stormRain)
 
         const introScript = [
             {
@@ -89,6 +92,22 @@ export default class PlayState implements IGameMode {
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 어둠에 다시 삼켜질꺼야 " },
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 그 때마다 모닥불을 찾아가야해" },
             { type: 'action', func: () => { 
+                this.quest.startQuest(QuestLocalId.Q006_ESCAPE_DARKSIDE)
+                this.playmode() 
+                this.eventCtrl.SendEventMessage(EventTypes.DeregisterLoop, this.stormRain)
+                this.stormRain.Hide()
+            }},
+        ]
+        const nightScript = [
+            { type: 'action', func: () => { 
+                this.storymode() 
+                this.eventCtrl.SendEventMessage(EventTypes.DayNightCtrl, { v: 0.85, auto: false })
+            }},
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 드디어 밤이 시작되었어" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 길잃은 자들이 몰려올꺼야" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 모닥불에서 얻은 불타는 나무를 꺼내" },
+            { type: 'action', func: () => { 
+                this.quest.startQuest(QuestLocalId.Q007_HUNTING_ZOMBIE)
                 this.playmode() 
             }},
         ]
@@ -105,6 +124,10 @@ export default class PlayState implements IGameMode {
                 }
                 case QuestLocalId.Q005_FIRE_CAMPFIRE: {
                     this.dialogue.runScript(darkScript)
+                    break;
+                }
+                case QuestLocalId.Q006_ESCAPE_DARKSIDE: {
+                    this.dialogue.runScript(nightScript)
                     break;
                 }
             }

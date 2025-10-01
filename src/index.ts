@@ -105,7 +105,7 @@ export class TwilightSurvivor {
 
     constructor() {
         console.log('Twilight Survivor')
-        InitActionRegistry(this.eventCtrl, this.scene)
+        InitActionRegistry(this.eventCtrl, this.scene, this.camera)
 
         THREE.ColorManagement.enabled = true;
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -190,7 +190,7 @@ export class TwilightSurvivor {
                 [stormRain], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
             new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl, 
-                this.quest, this.campctrl, [], [stormRain], [this.player, this.npc]))
+                this.quest, this.campctrl, stormRain, [], [], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }

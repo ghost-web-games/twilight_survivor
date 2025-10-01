@@ -30,6 +30,9 @@ export class LocalQuestManager {
             if (this.quest.getQuestStatus(QuestLocalId.Q005_FIRE_CAMPFIRE) != "ACTIVE") return
             if (fireAmount > 0) this.quest.handleGameEvent({ type: "activate", targetId: "campfire" })
         })
-
+        this.eventCtrl.RegisterEventListener(EventTypes.DarkParticle, (btAmount: number) => {
+            if (this.quest.getQuestStatus(QuestLocalId.Q006_ESCAPE_DARKSIDE) != "ACTIVE") return
+            if (btAmount == 0) this.quest.handleGameEvent({ type: "deactivate", targetId: "darkparticle" })
+        })
     }
 }
