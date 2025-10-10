@@ -7,8 +7,6 @@ import { EventTypes } from '@Glibs/types/globaltypes';
 import { Player } from "@Glibs/actors/player/player";
 import { InputMode } from "@Glibs/systems/inputs/input";
 import { Camera } from "@Glibs/systems/camera/camera";
-import { Npc } from "@Glibs/actors/npc/npc";
-import { DefaultPosition } from "../index";
 import { KeyType } from "@Glibs/types/eventtypes";
 import { DialogueManager } from "@Glibs/systems/alarm/dialoguemgr";
 import { QuestManager } from "@Glibs/systems/quests/questmgr";
@@ -17,6 +15,9 @@ import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import CampfireCtrl from "../gameobjects/campfirectrl";
 import { QuestLocalId } from "../localquests/questdata";
 import { RainStorm } from "@Glibs/world/rain/rainstorm";
+import QuestDialog from "src/localquests/questdlg";
+import InvenDialog from "src/gameobjects/invendlg";
+import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
@@ -29,20 +30,26 @@ export default class PlayState implements IGameMode {
         private player: Player,
         private playerCtrl: PlayerCtrl,
         private quest: QuestManager,
+        private questDlg: QuestDialog,
+        private invenDlg: InvenDialog,
+        private ringMenu: RadialMenuUI,
         private campCtrl: CampfireCtrl,
         private stormRain: RainStorm,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         private taskObj: ILoop[] = [],
         private phyObj: IPhysicsObject[] = [],
     ) { 
-
     }
     async Init() {
-
+        this.ringMenu.setItems([
+            // { type: 'img', value: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f392.svg' },
+            { icon: { type: 'webfontMS', value: 'personal_bag' }, onSelect: () => { this.invenDlg.show() } },
+            { icon: { type: 'webfontMS', value: 'exclamation' }, onSelect: () => { this.questDlg.show() } },
+        ]);
+        this.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
         this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
-
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
         this.campCtrl.init()
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoop, this.stormRain)
@@ -135,6 +142,7 @@ export default class PlayState implements IGameMode {
     }
     Uninit(): void {
         this.campCtrl.uninit()
+        this.ringMenu.unmount()
     }
     Renderer(r: IPostPro, delta: number): void {
        r.render(delta)

@@ -2,7 +2,7 @@ import IEventController from "@Glibs/interface/ievent";
 import { QuestId } from "@Glibs/systems/quests/questdef";
 import { QuestManager } from "@Glibs/systems/quests/questmgr";
 import { EventTypes } from "@Glibs/types/globaltypes";
-import QuestDialog from "./questdlg";
+import QuestDialog from "./questcompdlg";
 import { QuestLocalId } from "./questdata";
 
 export class LocalQuestManager {

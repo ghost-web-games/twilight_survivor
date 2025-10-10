@@ -7,6 +7,8 @@ import { ObjectPlacer, PlacedUV, PlacementInfo } from "@Glibs/world/worldmap/aut
 import WorldMap from "@Glibs/world/worldmap/worldmap";
 import { Char } from '@Glibs/types/assettypes';
 import { CampfierPos, DefaultPosition } from './index';
+import { Player } from '@Glibs/actors/player/player';
+import { WindyInstancedVegetation } from '@Glibs/world/fluffynature/massfluffy';
 
 export default class MapFactory {
     placer = new ObjectPlacer()
@@ -14,6 +16,7 @@ export default class MapFactory {
         private eventCtrl: IEventController,
         private worldMap: WorldMap,
         private scene: THREE.Scene,
+        private player: Player
     ) { }
     async MakeMap() {
         const map = await this.worldMap.MakeMapObject()
@@ -186,6 +189,10 @@ export default class MapFactory {
                     }
                 })
             res.add(mesh)
+            if(type == MapEntryType.WindyInstancedVegetation) {
+                const obj = this.worldMap.GetMapObject(type) as WindyInstancedVegetation
+                obj.SetFocusTarget(this.player.Meshs)
+            }
         })
         this.scene.add(res)
         return res

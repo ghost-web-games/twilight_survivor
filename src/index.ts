@@ -45,11 +45,14 @@ import { newQuestDefs } from './localquests/questdata'
 import Confetti from '@Glibs/ux/confetti/confetti'
 import { QuestId } from '@Glibs/systems/quests/questdef'
 import { LocalQuestManager } from './localquests/localquestmgr'
-import QuestDialog from './localquests/questdlg'
 import MapFactory from './mapfactory'
 import ProgressBarHtml from '@Glibs/ux/progress/progressbarhtml'
 import CampfireCtrl from './gameobjects/campfirectrl'
 import DayNightRig from '@Glibs/world/sky/daynightrig'
+import { RadialMenuUI } from '@Glibs/ux/radialmenus/radialmenus'
+import QuestCompleteDialog from './localquests/questcompdlg'
+import InvenDialog from './gameobjects/invendlg'
+import QuestDialog from './localquests/questdlg'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -91,15 +94,36 @@ export class TwilightSurvivor {
 
     light = new DefaultLights(this.scene)
     worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
-    mapFab = new MapFactory(this.eventCtrl, this.worldMap, this.scene)
+    mapFab = new MapFactory(this.eventCtrl, this.worldMap, this.scene, this.player)
 
     dialogue = new DialogueManager(this.eventCtrl)
     input = new Input(this.eventCtrl)
     quest = new QuestManager(this.eventCtrl, newQuestDefs)
     questDlg = new QuestDialog(this.eventCtrl, this.quest, this.invenFab)
+    questCompDlg = new QuestCompleteDialog(this.eventCtrl, this.quest, this.invenFab)
+    invenDlg = new InvenDialog(this.loader, this.eventCtrl, this.invenFab, this.player)
     confetti = new Confetti(this.eventCtrl, document.body)
-    localQuest  = new LocalQuestManager(this.eventCtrl, this.quest, this.questDlg)
+    localQuest  = new LocalQuestManager(this.eventCtrl, this.quest, this.questCompDlg)
     campctrl = new CampfireCtrl(this.eventCtrl, this.invenFab.inven, this.player, CampfierPos)
+    ringMenu = new RadialMenuUI(this.eventCtrl, {
+        // overlay 부모(생략시 document.body)
+        parent: this.renderer.domElement.parentElement || document.body,
+
+        // GUI에서 쓰던 옵션들
+        radius: ((window.innerWidth > window.innerHeight) ? window.innerHeight : window.innerWidth) * 0.5 / 2,
+        itemSize: 76,
+        startAngleDeg: -90,
+        animateMs: 520,
+        spinOnOpen: 1.2,
+        easing: 'outBack',
+        ringStyle: 'none',     // 'none' | 'solid' | 'line'
+        shape: 'circle',       // 'circle' | 'rounded' | 'square' | 'hex'
+        theme: 'SF Neon',       // 또는 'custom' + themeVars
+        fontScale: 0.52,
+        autoCloseOnMiss: true,
+        openAt: 'center',       // 또는 'pointer' (클릭 지점 팝업)
+        enableGlobalCenterClick: true, // 전역 중앙 클릭 열기
+    });
 
     fog = new THREE.FogExp2(0x87ceeb, 0.0025 * 5);
 
@@ -111,14 +135,15 @@ export class TwilightSurvivor {
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ReinhardToneMapping; // Exposure가 실제로 적용됨
         this.renderer.toneMappingExposure = 2.5;              // 1.7~2.2 사이에서 취향 미세조정
-        
+
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    
+
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         const pixel = (window.devicePixelRatio >= 2) ? window.devicePixelRatio / 2 : window.devicePixelRatio;
         this.renderer.setPixelRatio(Math.min(pixel, 1.0));
 
+        this.ringMenu.unmount()
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             document.body.appendChild(this.renderer.domElement)
 
@@ -153,7 +178,7 @@ export class TwilightSurvivor {
             this.loading.startProcessing(1); // 각 작업 사이에 300ms 지연
         });
     }
-    
+
     resize() {
         this.camera.aspect = window.innerWidth / window.innerHeight
         this.camera.resize(window.innerWidth, window.innerHeight)
@@ -186,11 +211,12 @@ export class TwilightSurvivor {
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
                 this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("opening",
-            new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [], 
+            new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [],
                 [stormRain], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl, 
-                this.quest, this.campctrl, stormRain, [], [], [this.player, this.npc]))
+            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl,
+                this.quest, this.questDlg, this.invenDlg, this.ringMenu,
+                this.campctrl, stormRain, [], [], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }
@@ -204,6 +230,7 @@ export class TwilightSurvivor {
     }
     accTime = 0
     render() {
+        this.debug.defaultFps()
         const time = this.clock.getDelta()
         const delta = Math.min(1, time)
         this.accTime += delta

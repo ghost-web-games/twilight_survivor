@@ -1,92 +1,69 @@
 import TapButton from "@Glibs/ux/buttons/tapbutton";
+import { InvenFactory } from "@Glibs/inventory/invenfactory";
 import IEventController from "@Glibs/interface/ievent";
 import WoodModal from "@Glibs/ux/dialog/woodmodal";
-import ListView from "@Glibs/ux/listviews/listview";
-import ListItem from "@Glibs/ux/listviews/listitem";
 import { EventTypes } from "@Glibs/types/globaltypes";
 import { GameButton } from "@Glibs/ux/buttons/gamebutton";
+import Slot from '@Glibs/ux/listviews/slot';
+import { Grid } from '@Glibs/ux/grid/grid';
+import { QuestId } from '@Glibs/systems/quests/questdef';
 import { QuestManager } from '@Glibs/systems/quests/questmgr';
-import Slot from "@Glibs/ux/listviews/slot";
-import { SimpleGux } from "@Glibs/ux/gux";
-import { Grid } from "@Glibs/ux/grid/grid";
-import { StatPreset } from "@Glibs/actors/battle/stats";
-import { StatKey } from "@Glibs/types/stattypes";
-import { StatNamesKr } from "@Glibs/actors/battle/charstatus";
-import { InvenFactory } from "@Glibs/inventory/invenfactory";
-import { ItemProperty, itemDefs } from "@Glibs/inventory/items/itemdefs";
-import { ActiveQuest, Quest } from "@Glibs/systems/quests/questdef";
+import { SimpleGux } from '@Glibs/ux/gux';
+import { ItemProperty, itemDefs } from '@Glibs/inventory/items/itemdefs';
+import { StatPreset } from '@Glibs/actors/battle/stats';
+import { StatKey } from '@Glibs/types/stattypes';
+import { StatNamesKr } from '@Glibs/actors/battle/charstatus';
+import Confetti from '@Glibs/ux/confetti/confetti';
 
-export default class QuestDialog {
+export default class QuestCompleteDialog {
     tap: TapButton
-    list: ListView
-    descDom = document.createElement("div")
-    rewardDom = document.createElement("div")
-    desc = new SimpleGux({
-        dom: this.descDom,
-        param: ["container", "w-100", "h-100", "rounded"],
-    })
-    reward = new SimpleGux({
-        dom: this.rewardDom,
-        param: ["container", "w-100", "h-100", "rounded"],
-    })
-    vrGrid = new Grid({ vertical: true })
+    woodModal: WoodModal
+    confetti: Confetti
+    awardSlot = new Slot({ width: "100px" })
     constructor(
         private eventCtrl: IEventController,
         private quest: QuestManager,
         private invenFab: InvenFactory
     ) {
-        this.rewardDom.innerText = "Reward"
-
-        const woodModal = new WoodModal()
-        woodModal.RenderHtml("Quest")
+        this.woodModal = new WoodModal()
+        this.woodModal.RenderHtml("Quest Complete")
 
         const tap = new TapButton(document.body, {
-            open: () => { woodModal.Show() },
-            click: () => { woodModal.Hide() },
-            close: async () => { 
-                await woodModal.Hide() 
+            open: () => {
+                this.woodModal.Show()
+                this.eventCtrl.SendEventMessage(EventTypes.Confetti, true)
+            },
+            click: () => { this.woodModal.Hide() },
+            close: async () => {
+                await this.woodModal.Hide()
+                this.eventCtrl.SendEventMessage(EventTypes.Confetti, false)
             },
         })
-        tap.AddChildDom(woodModal.GetContentElement())
+
+        tap.AddChildDom(this.woodModal.GetContentElement())
         this.tap = tap
-
-        this.list = new ListView({ padding: "p-1", height: "100px" })
-        woodModal.addChildUi(this.list)
-        woodModal.addChildUi(this.vrGrid)
+        this.confetti = new Confetti(this.eventCtrl, tap.Dom)
 
     }
-    async show() {
-        this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
-        this.list.RemoveChild()
+    Reward(id: QuestId) {
+        const q = this.quest.getQuestInfo(id)
+        if (!q) return
+        const titleDom = document.createElement("div")
+        titleDom.innerText = "Quest: " + q.title
+        const rewardDom = document.createElement("div")
+        rewardDom.innerText = "Reward"
 
-        const questList = this.quest.getActiveQuests()
-        if(!questList.size) {
-            this.list.AddChild(new ListItem({ text: "No Active Quest", }))
-            return
-        }
-
-        questList.forEach((q) => {
-            const info = this.quest.getQuestInfo(q.questId)
-            if(!info) return
-            this.list.AddChild(new ListItem({
-                text: info.title,
-                click: async () => {
-                    this.showDesc(info)
-                }
-            }))
+        const vrGrid = new Grid({ vertical: true })
+        const title = new SimpleGux({
+            dom: titleDom,
+            param: ["container", "w-100", "h-100", "rounded"],
         })
-        const aq = questList.values().next().value as ActiveQuest
-        const info = this.quest.getQuestInfo(aq.questId)
-        this.showDesc(info!)
-        this.tap.Show()
-        this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
-    }
-    showDesc(q: Quest) {
-        this.vrGrid.dispose()
-        this.descDom.innerText = `"${q.description}"`
-
-        this.vrGrid.AddChild(this.desc)
-        this.vrGrid.AddChild(this.reward)
+        const reward = new SimpleGux({
+            dom: rewardDom,
+            param: ["container", "w-100", "h-100", "rounded"],
+        })
+        vrGrid.AddChild(title)
+        vrGrid.AddChild(reward)
 
         Object.entries(q.rewards).forEach(([rewardType, rewardValue]) => {
             switch (rewardType) {
@@ -99,15 +76,26 @@ export default class QuestDialog {
                     (rewardValue as {itemId: string, amount: number}[]).forEach((item) => {
                         const id = item.itemId as keyof typeof itemDefs
                         const prop = itemDefs[id]
-                        this.vrGrid.AddChild(this.itemGux(prop))
+                        vrGrid.AddChild(this.itemGux(prop))
                     })
                     break;
                 }
             }
             
         })
-    }
 
+        vrGrid.RenderHTML()
+        this.woodModal.AddChild(vrGrid)
+
+        if (!("items" in q.rewards)) {
+            const okBtn = new GameButton({ title: "Close", click: () => { this.tap.Hide(); } }, "red")
+            okBtn.RenderHTML()
+            this.woodModal.AddChild(okBtn)
+        }
+    }
+    async show() {
+        this.tap.Show()
+    }
     itemGux(item: ItemProperty) {
         const prop = this.invenFab.inven.GetItemInfo(item.id)
         const itemInfoSlot = new Slot({ width: "100px" })
@@ -130,6 +118,13 @@ export default class QuestDialog {
         vGrid.AddChild(grid)
         vGrid.AddChild(itemSpec, { colClassList: ["p-0"], rowClassList: ["m-0", "p-0"] })
 
+        const okBtn = new GameButton({
+            title: "Select", click: () => {
+                this.eventCtrl.SendEventMessage(EventTypes.Pickup, item.id)
+                this.tap.Hide()
+            }
+        })
+        vGrid.AddChild(okBtn)
         vGrid.RenderHTML()
 
         return vGrid
