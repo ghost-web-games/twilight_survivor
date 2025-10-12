@@ -68,6 +68,7 @@ export default class PlayState implements IGameMode {
             { type: 'action', func: () => {
                 this.quest.startQuest(QuestLocalId.Q004_OPENING_CAMPFIRE)
                 this.playmode()
+                this.eventCtrl.SendEventMessage(EventTypes.AlarmNormal, "캐릭터를 클릭하면 메뉴를 볼 수 있습니다.")
             }},
         ];
         this.dialogue.runScript(introScript)
@@ -112,7 +113,7 @@ export default class PlayState implements IGameMode {
             }},
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 드디어 밤이 시작되었어" },
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 길잃은 자들이 몰려올꺼야" },
-            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 모닥불에서 얻은 불타는 나무를 꺼내" },
+            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 인벤토리를 열고 모닥불에서 얻은 불타는 나무를 꺼내" },
             { type: 'action', func: () => { 
                 this.quest.startQuest(QuestLocalId.Q007_HUNTING_ZOMBIE)
                 this.playmode() 

@@ -46,23 +46,26 @@ export default class QuestCompleteDialog {
 
     }
     Reward(id: QuestId) {
+        this.woodModal.Clear()
+
         const q = this.quest.getQuestInfo(id)
         if (!q) return
         const titleDom = document.createElement("div")
         titleDom.innerText = "Quest: " + q.title
-        const rewardDom = document.createElement("div")
-        rewardDom.innerText = "Reward"
-
         const vrGrid = new Grid({ vertical: true })
         const title = new SimpleGux({
             dom: titleDom,
             param: ["container", "w-100", "h-100", "rounded"],
         })
+        vrGrid.AddChild(title)
+
+
+        const rewardDom = document.createElement("div")
+        rewardDom.innerText = "Reward"
         const reward = new SimpleGux({
             dom: rewardDom,
             param: ["container", "w-100", "h-100", "rounded"],
         })
-        vrGrid.AddChild(title)
         vrGrid.AddChild(reward)
 
         Object.entries(q.rewards).forEach(([rewardType, rewardValue]) => {
@@ -70,6 +73,7 @@ export default class QuestCompleteDialog {
                 case 'experience': {
                     const dom = document.createElement("div")
                     dom.innerText = `Exp: +${rewardValue}`
+                    vrGrid.AddChild(new SimpleGux({ dom, param: ["container"] }))
                     break;
                 }
                 case 'items' : {
@@ -88,7 +92,7 @@ export default class QuestCompleteDialog {
         this.woodModal.AddChild(vrGrid)
 
         if (!("items" in q.rewards)) {
-            const okBtn = new GameButton({ title: "Close", click: () => { this.tap.Hide(); } }, "red")
+            const okBtn = new GameButton({ title: "Close", click: () => { this.tap.Hide(); } })
             okBtn.RenderHTML()
             this.woodModal.AddChild(okBtn)
         }

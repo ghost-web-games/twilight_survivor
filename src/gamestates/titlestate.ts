@@ -71,12 +71,13 @@ export default class TitleState implements IGameMode {
         this.playerCtrl.reset()
         this.playerCtrl.init()
         this.playerCtrl.changeState(this.playerCtrl.SleepingIdleSt)
+        this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
 
         const start = this.player.Pos.clone()
         start.addScalar(10)
         const look = this.player.Pos.clone()
         look.y += .5
-        this.camera.position.set(start.x, 25, start.z + 50)
+        this.camera.position.set(start.x, 5, start.z + 50)
         this.myTween = gsap.to(this.camera.position, {
             x: start.x, y: start.y, z: start.z + 5, duration: 20, onUpdate: () => {
                 this.camera.lookAt(look)

@@ -17,6 +17,7 @@ import { EventTypes } from "@Glibs/types/globaltypes";
 import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import { Char } from "@Glibs/loader/assettypes";
 import { Grid } from "@Glibs/ux/grid/grid";
+import { SimpleGux } from "@Glibs/ux/gux";
 
 export default class MenuState implements IGameMode {
     get Objects() { return this.objs }
@@ -25,7 +26,6 @@ export default class MenuState implements IGameMode {
     sysdlg = new SystemDialog()
 
     mdom: MenuGroup
-    cdom: MenuGroup
     sdom: MenuGroup
 
     startDom: HTMLElement
@@ -49,14 +49,14 @@ export default class MenuState implements IGameMode {
             }
         })
         const openingIcon = new MenuIcon({
-            text: "Test Play", boxWidth: "100px", color: IconsColor.Yellow, 
+            text: "Tutorial", boxWidth: "100px", color: IconsColor.Yellow, 
             icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
                 this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
             }
         })
+        grid.AddChild(new SimpleGux({ dom: icon.dom, param: ["container", "w-100", "h-100", "rounded"] }))
+        grid.AddChild(new SimpleGux({ dom: openingIcon.dom, param: ["container", "w-100", "h-100", "rounded"] }))
         grid.RenderHTML()
-        grid.AddChildDom(icon.dom)
-        grid.AddChildDom(openingIcon.dom)
 
         iconDiv.style.position = "absolute"
         iconDiv.style.bottom = "15%"
@@ -64,11 +64,7 @@ export default class MenuState implements IGameMode {
         iconDiv.style.transform = "translate(-50%, -50%)"
         iconDiv.appendChild(grid.Dom)
         this.startDom = iconDiv
-
-        this.cdom = new MenuGroup(document.body, { top: "10%", left: "0px", opacity: "0.5", vertical: true })
-        this.cdom.addMenu(new MenuIcon({ icon: Icons.Dog, color: IconsColor.Transperant, click: () => { this.changeDog() } }))
-        this.cdom.addMenu(new MenuIcon({ icon: Icons.Cat, color: IconsColor.Transperant, click: () => { this.changeCat() } }))
-
+        
         this.mdom = new MenuGroup(document.body, { bottom: "0px", opacity: "0" })
         this.mdom.addMenu(new MenuIcon({ icon: Icons.Setting, color: IconsColor.Yellow, boxEnable: true, click: () => { this.sysdlg.show() } }))
         this.mdom.addMenu(new MenuIcon({ icon: Icons.BlueBook, color: IconsColor.Yellow, boxEnable: true, click: () => {  } }))
@@ -77,28 +73,13 @@ export default class MenuState implements IGameMode {
         this.sdom.addMenu(new StatusBar({ icon: Icons.Coin }))
         this.sdom.addMenu(new StatusBar({ icon: Icons.Lightning }))
     }
-    async changeDog() {
-        this.scene.remove(this.player.Meshs)
-        await this.player.Loader(this.loader.GetAssets(Char.CharAniDog), new THREE.Vector3(0, 1, 0), "dog")
-        this.eventCtrl.SendEventMessage(EventTypes.SetNonGlow, this.player.Meshs)
-        this.player.Visible = true
-        this.scene.add(this.player.Meshs)
-    }
-    async changeCat() {
-        this.scene.remove(this.player.Meshs)
-        await this.player.Loader(this.loader.GetAssets(Char.CharAniCat), new THREE.Vector3(0, 1, 0), "cat")
-        this.eventCtrl.SendEventMessage(EventTypes.SetNonGlow, this.player.Meshs)
-        this.player.Visible = true
-        this.scene.add(this.player.Meshs)
-    }
     tl: gsap.core.Timeline = gsap.timeline()
     async Init() {
         // this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
         this.camera.controls.enabled = false
         document.body.appendChild(this.startDom)
-        this.cdom.Show()
-        this.mdom.Show()
         this.sdom.Show()
+        this.mdom.Show()
 
         const start = this.player.Pos.clone()
         start.addScalar(10)
@@ -118,7 +99,6 @@ export default class MenuState implements IGameMode {
     }
     Uninit(): void {
         this.tl.kill()
-        this.cdom.Hide()
         this.mdom.Hide()
         this.sdom.Hide()
         document.body.removeChild(this.startDom)

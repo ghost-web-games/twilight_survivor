@@ -108,6 +108,7 @@ export class TwilightSurvivor {
     ringMenu = new RadialMenuUI(this.eventCtrl, {
         // overlay 부모(생략시 document.body)
         parent: this.renderer.domElement.parentElement || document.body,
+        onlyWhenTargetWithin: this.renderer.domElement,
 
         // GUI에서 쓰던 옵션들
         radius: ((window.innerWidth > window.innerHeight) ? window.innerHeight : window.innerWidth) * 0.5 / 2,
@@ -244,3 +245,17 @@ export class TwilightSurvivor {
 const app = new TwilightSurvivor()
 app.init()
 app.animate()
+
+function dbgPath(e: PointerEvent) {
+  const path = (e.composedPath?.() ?? []) as EventTarget[];
+  const els = path.filter((t): t is Element => t instanceof Element);
+  console.group('pointer path');
+  for (const el of els) {
+    const cs = getComputedStyle(el);
+    console.log(el.tagName.toLowerCase(), el.id ? `#${el.id}` : '',
+                [...el.classList].map(c => '.'+c).join(''),
+                { cursor: cs.cursor, pointerEvents: cs.pointerEvents });
+  }
+  console.groupEnd();
+}
+window.addEventListener('pointerdown', dbgPath);

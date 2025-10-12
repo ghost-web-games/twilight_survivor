@@ -25,7 +25,7 @@ export const newQuestDefs = {
     },
     [QuestLocalId.Q004_OPENING_CAMPFIRE]: {
         "title": "꺼진 모닥불 찾기",
-        "description": "불을 피우기 위해 모닥불을 찾아야합니다..",
+        "description": "불을 피우기 위해 모닥불을 찾아야합니다.. 주변을 살펴보면 불을 피웠던 흔적이 보입니다. 멀지 않은 곳에 있습니다.",
         "startNpc": "npc_guard",
         "endNpc": "",
         "preconditions": {

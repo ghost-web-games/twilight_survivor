@@ -93,6 +93,7 @@ export default class QuestDialog {
                 case 'experience': {
                     const dom = document.createElement("div")
                     dom.innerText = `Exp: +${rewardValue}`
+                    this.vrGrid.AddChild(new SimpleGux({ dom, param: ["container"] }))
                     break;
                 }
                 case 'items' : {
