@@ -16,10 +16,13 @@ import CampfireCtrl from "../gameobjects/campfirectrl";
 import { QuestLocalId } from "../localquests/questdata";
 import { RainStorm } from "@Glibs/world/rain/rainstorm";
 import QuestDialog from "src/localquests/questdlg";
-import InvenDialog from "src/gameobjects/invendlg";
 import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
+import InvenDialog from "src/dialogs/invendlg";
+import MenuGroup from "@Glibs/ux/menuicons/menugroup";
+import { Monsters } from "@Glibs/actors/monsters/monsters";
+import { MonsterId } from "@Glibs/types/monstertypes";
 
-export default class PlayState implements IGameMode {
+export default class TutorialState implements IGameMode {
     get Objects() { return this.objs }
     get TaskObj() { return this.taskObj }
     get Physics() { return this.phyObj }
@@ -29,10 +32,12 @@ export default class PlayState implements IGameMode {
         private dialogue: DialogueManager,
         private player: Player,
         private playerCtrl: PlayerCtrl,
+        private monsters: Monsters,
         private quest: QuestManager,
         private questDlg: QuestDialog,
         private invenDlg: InvenDialog,
         private ringMenu: RadialMenuUI,
+        private sdom: MenuGroup,
         private campCtrl: CampfireCtrl,
         private stormRain: RainStorm,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
@@ -100,6 +105,7 @@ export default class PlayState implements IGameMode {
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 어둠에 다시 삼켜질꺼야 " },
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 그 때마다 모닥불을 찾아가야해" },
             { type: 'action', func: () => { 
+                this.sdom.Show()
                 this.quest.startQuest(QuestLocalId.Q006_ESCAPE_DARKSIDE)
                 this.playmode() 
                 this.eventCtrl.SendEventMessage(EventTypes.DeregisterLoop, this.stormRain)
@@ -115,6 +121,8 @@ export default class PlayState implements IGameMode {
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 길잃은 자들이 몰려올꺼야" },
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 인벤토리를 열고 모닥불에서 얻은 불타는 나무를 꺼내" },
             { type: 'action', func: () => { 
+                this.monsters.Enable = true
+                this.monsters.CreateMonster(MonsterId.Zombie, { respawn: false, timer: 5000 })
                 this.quest.startQuest(QuestLocalId.Q007_HUNTING_ZOMBIE)
                 this.playmode() 
             }},
@@ -144,6 +152,7 @@ export default class PlayState implements IGameMode {
     Uninit(): void {
         this.campCtrl.uninit()
         this.ringMenu.unmount()
+        this.sdom.Hide()
     }
     Renderer(r: IPostPro, delta: number): void {
        r.render(delta)

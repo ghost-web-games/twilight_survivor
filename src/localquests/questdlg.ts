@@ -62,22 +62,21 @@ export default class QuestDialog {
         const questList = this.quest.getActiveQuests()
         if(!questList.size) {
             this.list.AddChild(new ListItem({ text: "No Active Quest", }))
-            return
+        } else {
+            questList.forEach((q) => {
+                const info = this.quest.getQuestInfo(q.questId)
+                if (!info) return
+                this.list.AddChild(new ListItem({
+                    text: info.title,
+                    click: async () => {
+                        this.showDesc(info)
+                    }
+                }))
+            })
+            const aq = questList.values().next().value as ActiveQuest
+            const info = this.quest.getQuestInfo(aq.questId)
+            this.showDesc(info!)
         }
-
-        questList.forEach((q) => {
-            const info = this.quest.getQuestInfo(q.questId)
-            if(!info) return
-            this.list.AddChild(new ListItem({
-                text: info.title,
-                click: async () => {
-                    this.showDesc(info)
-                }
-            }))
-        })
-        const aq = questList.values().next().value as ActiveQuest
-        const info = this.quest.getQuestInfo(aq.questId)
-        this.showDesc(info!)
         this.tap.Show()
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
     }

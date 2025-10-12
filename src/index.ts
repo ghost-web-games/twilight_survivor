@@ -20,7 +20,7 @@ import FontLoader from '@Glibs/ux/text/fontloader'
 import Toast from '@Glibs/ux/toast/toast'
 import OptPhysics from '@Glibs/world/physics/optphysic'
 import * as THREE from 'three'
-import PlayState from './gamestates/playstate'
+import TutorialState from './gamestates/tutorialstate'
 import TitleState from './gamestates/titlestate'
 import MenuState from './gamestates/menustate'
 import { EventTypes } from '@Glibs/types/globaltypes'
@@ -51,8 +51,13 @@ import CampfireCtrl from './gameobjects/campfirectrl'
 import DayNightRig from '@Glibs/world/sky/daynightrig'
 import { RadialMenuUI } from '@Glibs/ux/radialmenus/radialmenus'
 import QuestCompleteDialog from './localquests/questcompdlg'
-import InvenDialog from './gameobjects/invendlg'
+import InvenDialog from './dialogs/invendlg'
 import QuestDialog from './localquests/questdlg'
+import StatusBar from '@Glibs/ux/menuicons/statusbar'
+import { Icons } from '@Glibs/types/icontypes'
+import StatusCtrl from './gameobjects/statusctrl'
+import MenuGroup from '@Glibs/ux/menuicons/menugroup'
+import { GlobalEffector } from '@Glibs/magical/effects/globaleffector'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -82,6 +87,7 @@ export class TwilightSurvivor {
     debug = new DebugDiv(this.eventCtrl)
     pp = new Postpro2(this.scene, this.camera, this.renderer, this.eventCtrl)
 
+    gEffect = new GlobalEffector(this.eventCtrl, this.scene, this.camera)
     monDb = new MonsterDb()
     invenFab = new InvenFactory(this.loader, this.eventCtrl)
     player = new Player(this.loader, this.loader.GetAssets(Char.CharHumanMale), this.eventCtrl, this.scene, this.invenFab.inven, this.audioListener)
@@ -104,7 +110,6 @@ export class TwilightSurvivor {
     invenDlg = new InvenDialog(this.loader, this.eventCtrl, this.invenFab, this.player)
     confetti = new Confetti(this.eventCtrl, document.body)
     localQuest  = new LocalQuestManager(this.eventCtrl, this.quest, this.questCompDlg)
-    campctrl = new CampfireCtrl(this.eventCtrl, this.invenFab.inven, this.player, CampfierPos)
     ringMenu = new RadialMenuUI(this.eventCtrl, {
         // overlay 부모(생략시 document.body)
         parent: this.renderer.domElement.parentElement || document.body,
@@ -126,6 +131,13 @@ export class TwilightSurvivor {
         enableGlobalCenterClick: true, // 전역 중앙 클릭 열기
     });
 
+    sdom = new MenuGroup(document.body, { height: "50px", top: "0px", opacity: "0" })
+    statusBar = new StatusBar({ icon: Icons.Lightning, lolliBar: true, max: 100 })
+    heartBar = new StatusBar({ icon: Icons.Heart, lolliBar: true, max: 100 })
+
+    campctrl = new CampfireCtrl(this.eventCtrl, this.invenFab.inven, this.player, CampfierPos, this.statusBar)
+    statusCtrl = new StatusCtrl(this.eventCtrl, this.playerCtrl, this.heartBar)
+
     fog = new THREE.FogExp2(0x87ceeb, 0.0025 * 5);
 
     constructor() {
@@ -145,6 +157,9 @@ export class TwilightSurvivor {
         this.renderer.setPixelRatio(Math.min(pixel, 1.0));
 
         this.ringMenu.unmount()
+        this.sdom.addMenu(this.heartBar)
+        this.sdom.addMenu(this.statusBar)
+
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             document.body.appendChild(this.renderer.domElement)
 
@@ -215,8 +230,9 @@ export class TwilightSurvivor {
             new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [],
                 [stormRain], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl,
-                this.quest, this.questDlg, this.invenDlg, this.ringMenu,
+            new TutorialState(this.eventCtrl, this.camera, this.dialogue, this.player, 
+                this.playerCtrl, this.monsters,
+                this.quest, this.questDlg, this.invenDlg, this.ringMenu, this.sdom,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
 
         this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")

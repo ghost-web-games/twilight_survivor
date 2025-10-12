@@ -1,4 +1,5 @@
 import { itemDefs } from "@Glibs/inventory/items/itemdefs";
+import { MonsterId } from "@Glibs/types/monstertypes";
 
 export enum QuestLocalId {
     Q003_OPENING_GET_LOGS = "Q003_OPENING_GET_LOGS",
@@ -78,7 +79,7 @@ export const newQuestDefs = {
             "level": 1
         },
         "objectives": [
-            { "type": "kill", "targetId": "zombie", "amount": 1 }
+            { "type": "kill", "targetId": MonsterId.Zombie, "amount": 1 }
         ],
         "rewards": {
             "experience": 100,

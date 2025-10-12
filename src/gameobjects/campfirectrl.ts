@@ -3,6 +3,7 @@ import { IPhysicsObject } from "@Glibs/interface/iobject";
 import { Inventory } from "@Glibs/inventory/inventory";
 import { itemDefs } from "@Glibs/inventory/items/itemdefs";
 import { EventTypes } from "@Glibs/types/globaltypes";
+import StatusBar from "@Glibs/ux/menuicons/statusbar";
 
 
 export default class CampfireCtrl {
@@ -22,6 +23,7 @@ export default class CampfireCtrl {
         private inven: Inventory,
         private player: IPhysicsObject,
         private campfire: THREE.Vector3,
+        private status: StatusBar,
     ) {
         eventCtrl.RegisterEventListener(EventTypes.CampfireInteract, (actor: IPhysicsObject) => {
             const slot = this.inven.GetItemSlot(itemDefs.Logs.id)
@@ -81,6 +83,7 @@ export default class CampfireCtrl {
             }
 
             console.log(changeAmount, this.fireAmount, this.btAmount)
+            this.status.UpdateStatus((1-this.btAmount) * 100)
             // 변경된 값을 이벤트로 전송
             this.eventCtrl.SendEventMessage(EventTypes.DarkParticle, this.btAmount);
 
