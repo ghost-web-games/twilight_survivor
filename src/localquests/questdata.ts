@@ -7,6 +7,7 @@ export enum QuestLocalId {
     Q005_FIRE_CAMPFIRE = "Q005_FIRE_CAMPFIRE",
     Q006_ESCAPE_DARKSIDE = "Q006_ESCAPE_DARKSIDE",
     Q007_HUNTING_ZOMBIE = "Q007_HUNTING_ZOMBIE",
+    Q008_LAST_MISSION = "Q008_LAST_MISSION",
 }
 export const newQuestDefs = {
     [QuestLocalId.Q003_OPENING_GET_LOGS]: {
@@ -80,6 +81,21 @@ export const newQuestDefs = {
         },
         "objectives": [
             { "type": "kill", "targetId": MonsterId.Zombie, "amount": 1 }
+        ],
+        "rewards": {
+            "experience": 100,
+        }
+    },
+    [QuestLocalId.Q008_LAST_MISSION]: {
+        "title": "생존게임",
+        "description": "무수히 많은 좀비들이 깨어날 시간이 되었습니다. 100마리의 좀비를 사냥하세요.",
+        "startNpc": "npc_guard",
+        "endNpc": "",
+        "preconditions": {
+            "level": 1
+        },
+        "objectives": [
+            { "type": "kill", "targetId": MonsterId.Zombie, "amount": 100 },
         ],
         "rewards": {
             "experience": 100,

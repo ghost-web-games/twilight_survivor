@@ -72,6 +72,7 @@ export default class TitleState implements IGameMode {
         this.playerCtrl.init()
         this.playerCtrl.changeState(this.playerCtrl.SleepingIdleSt)
         this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
+        this.eventCtrl.SendEventMessage(EventTypes.CtrlObjOff)
 
         const start = this.player.Pos.clone()
         start.addScalar(10)

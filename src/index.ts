@@ -58,6 +58,7 @@ import { Icons } from '@Glibs/types/icontypes'
 import StatusCtrl from './gameobjects/statusctrl'
 import MenuGroup from '@Glibs/ux/menuicons/menugroup'
 import { GlobalEffector } from '@Glibs/magical/effects/globaleffector'
+import PlayState from './gamestates/playstate'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -226,10 +227,12 @@ export class TwilightSurvivor {
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
                 this.scene, this.camera, [], [stormRain], [this.player,]))
-        this.gamecenter.RegisterGameMode("opening",
-            new OpeningState(this.eventCtrl, this.camera, this.player, this.npc, [],
-                [stormRain], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("play",
+            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, 
+                this.playerCtrl, this.monsters,
+                this.quest, this.questDlg, this.invenDlg, this.ringMenu, this.sdom,
+                this.campctrl, stormRain, [], [], [this.player, this.npc]))
+        this.gamecenter.RegisterGameMode("tutorial",
             new TutorialState(this.eventCtrl, this.camera, this.dialogue, this.player, 
                 this.playerCtrl, this.monsters,
                 this.quest, this.questDlg, this.invenDlg, this.ringMenu, this.sdom,

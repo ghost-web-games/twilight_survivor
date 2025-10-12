@@ -45,13 +45,13 @@ export default class MenuState implements IGameMode {
         const icon = new MenuIcon({
             text: "New Game", boxWidth: "100px", color: IconsColor.Yellow, 
             icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
-                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "opening")
+                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
             }
         })
         const openingIcon = new MenuIcon({
             text: "Tutorial", boxWidth: "100px", color: IconsColor.Yellow, 
             icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
-                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
+                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "tutorial")
             }
         })
         grid.AddChild(new SimpleGux({ dom: icon.dom, param: ["container", "w-100", "h-100", "rounded"] }))
