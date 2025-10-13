@@ -22,6 +22,7 @@ import MenuGroup from "@Glibs/ux/menuicons/menugroup";
 import { Monsters } from "@Glibs/actors/monsters/monsters";
 import { MonsterId } from "@Glibs/types/monstertypes";
 import { itemDefs } from "@Glibs/inventory/items/itemdefs";
+import { clearAllPendingTimers, createManagedTimeout } from "./utils";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
@@ -55,28 +56,33 @@ export default class PlayState implements IGameMode {
         this.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
+        this.eventCtrl.SendEventMessage(EventTypes.OrbitControlsOnOff, true)
         this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
         this.campCtrl.init()
-        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoop, this.stormRain)
+        this.stormRain.Hide()
 
         const survivorScript = [
             {
                 type: 'action', func: () => {
                     this.storymode()
-                    this.eventCtrl.SendEventMessage(EventTypes.CampfireCtrl, 0.5);
+                    this.eventCtrl.SendEventMessage(EventTypes.DayNightCtrl, { v: 0.85, auto: false })
+                    this.sdom.Show()
+                    this.eventCtrl.SendEventMessage(EventTypes.Pickup, itemDefs.Hanhwasbat.id)
                 }
             },
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 이제 좀비가 몰려와. 100마리를 사냥하면 여기서 탈출할 수 있을거야." },
             {
                 type: 'action', func: () => {
-                    this.eventCtrl.SendEventMessage(EventTypes.Pickup, itemDefs.Hanhwasbat.id)
-                    this.monsters.CreateMonster(MonsterId.Zombie, { respawn: true, timer: 1000 })
-                    this.quest.startQuest(QuestLocalId.Q008_LAST_MISSION)
                     this.playmode()
+                    this.monsters.Enable = true
+                    this.respown()
+                    this.quest.startQuest(QuestLocalId.Q008_LAST_MISSION)
+                    this.eventCtrl.SendEventMessage(EventTypes.Equipment, itemDefs.Hanhwasbat.id)
                 }
             },
         ]
+        this.dialogue.runScript(survivorScript)
         this.eventCtrl.RegisterEventListener(EventTypes.QuestStateChanged, (ret: { questId: QuestId, status: string }) => {
             if (ret.status !== "COMPLETED") return
             switch (ret.questId) {

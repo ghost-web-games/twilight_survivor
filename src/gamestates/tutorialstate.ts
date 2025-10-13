@@ -21,6 +21,7 @@ import InvenDialog from "src/dialogs/invendlg";
 import MenuGroup from "@Glibs/ux/menuicons/menugroup";
 import { Monsters } from "@Glibs/actors/monsters/monsters";
 import { MonsterId } from "@Glibs/types/monstertypes";
+import { clearAllPendingTimers, createManagedTimeout } from "./utils";
 
 export default class TutorialState implements IGameMode {
     get Objects() { return this.objs }
@@ -54,6 +55,7 @@ export default class TutorialState implements IGameMode {
         this.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
+        this.eventCtrl.SendEventMessage(EventTypes.OrbitControlsOnOff, true)
         this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
         this.campCtrl.init()
@@ -148,9 +150,10 @@ export default class TutorialState implements IGameMode {
             { type: 'dialogue', key: KeyType.Action1, text: "목소리: 이제 좀비가 몰려와. 100마리를 사냥하면 여기서 탈출할 수 있을거야." },
             {
                 type: 'action', func: () => {
+                    this.playmode()
                     this.monsters.CreateMonster(MonsterId.Zombie, { respawn: true, timer: 1000 })
                     this.quest.startQuest(QuestLocalId.Q008_LAST_MISSION)
-                    this.playmode()
+                    this.respown()
                 }
             },
         ]

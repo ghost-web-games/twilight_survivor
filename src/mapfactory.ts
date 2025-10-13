@@ -6,7 +6,7 @@ import CustomGround from "@Glibs/world/ground/customground";
 import { ObjectPlacer, PlacedUV, PlacementInfo } from "@Glibs/world/worldmap/autoobjectplacer";
 import WorldMap from "@Glibs/world/worldmap/worldmap";
 import { Char } from '@Glibs/types/assettypes';
-import { CampfierPos, DefaultPosition } from './index';
+import { CampfierPos } from './index';
 import { Player } from '@Glibs/actors/player/player';
 import { WindyInstancedVegetation } from '@Glibs/world/fluffynature/massfluffy';
 
@@ -59,7 +59,7 @@ export default class MapFactory {
                 minRadius: 2.5,
                 numKinds: 5,
                 scaleMin: 0.9,
-                scaleRange: 0.6,
+                scaleRange: 0.2,
                 occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
             });
             occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트

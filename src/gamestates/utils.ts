@@ -71,4 +71,5 @@ function clearAllPendingTimers(): void {
     console.log('--- 타이머 해제 완료 ---\n');
 }
 
+export { createManagedTimeout, clearAllPendingTimers };
 

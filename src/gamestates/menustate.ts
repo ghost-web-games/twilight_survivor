@@ -26,7 +26,6 @@ export default class MenuState implements IGameMode {
     sysdlg = new SystemDialog()
 
     mdom: MenuGroup
-    sdom: MenuGroup
 
     startDom: HTMLElement
     constructor(
@@ -68,17 +67,12 @@ export default class MenuState implements IGameMode {
         this.mdom = new MenuGroup(document.body, { bottom: "0px", opacity: "0" })
         this.mdom.addMenu(new MenuIcon({ icon: Icons.Setting, color: IconsColor.Yellow, boxEnable: true, click: () => { this.sysdlg.show() } }))
         this.mdom.addMenu(new MenuIcon({ icon: Icons.BlueBook, color: IconsColor.Yellow, boxEnable: true, click: () => {  } }))
-
-        this.sdom = new MenuGroup(document.body, { height: "45px", top: "-10px", opacity: "0" })
-        this.sdom.addMenu(new StatusBar({ icon: Icons.Coin }))
-        this.sdom.addMenu(new StatusBar({ icon: Icons.Lightning }))
     }
     tl: gsap.core.Timeline = gsap.timeline()
     async Init() {
         // this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
-        this.camera.controls.enabled = false
+        this.eventCtrl.SendEventMessage(EventTypes.OrbitControlsOnOff, false)
         document.body.appendChild(this.startDom)
-        this.sdom.Show()
         this.mdom.Show()
 
         const start = this.player.Pos.clone()
@@ -100,7 +94,6 @@ export default class MenuState implements IGameMode {
     Uninit(): void {
         this.tl.kill()
         this.mdom.Hide()
-        this.sdom.Hide()
         document.body.removeChild(this.startDom)
     }
     Renderer(r: IPostPro, delta: number): void {
