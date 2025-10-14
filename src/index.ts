@@ -71,7 +71,7 @@ export class TwilightSurvivor {
 
     font = new FontLoader()
 
-    loading = new WheelLoader(this.eventCtrl)
+    loading = new WheelLoader(this.eventCtrl, { fullscreen: true, soundWarning: true, needToTap: true })
     spinner = new Spinning(this.eventCtrl)
     progrss = new ProgressBarHtml(this.eventCtrl)
 
@@ -189,6 +189,9 @@ export class TwilightSurvivor {
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             await this.InitScene()
         })
+        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingCompleteItem, async () => {
+            this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
+        })
         // DOM이 완전히 로드된 후 스크립트 실행
         window.addEventListener('DOMContentLoaded', () => {
             // 실제 애플리케이션에서는 이 부분에 수행해야 할 함수들을 등록합니다.
@@ -237,8 +240,6 @@ export class TwilightSurvivor {
                 this.playerCtrl, this.monsters,
                 this.quest, this.questDlg, this.invenDlg, this.ringMenu, this.sdom,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
-
-        this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "titlemode")
     }
 
     clock = new THREE.Clock()

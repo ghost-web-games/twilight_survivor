@@ -87,7 +87,6 @@ export default class PlayState implements IGameMode {
             if (ret.status !== "COMPLETED") return
             switch (ret.questId) {
                 case QuestLocalId.Q007_HUNTING_ZOMBIE: {
-                    this.dialogue.runScript(survivorScript)
                     break;
                 }
             }
