@@ -12,6 +12,9 @@ import { WindyInstancedVegetation } from '@Glibs/world/fluffynature/massfluffy';
 
 export default class MapFactory {
     placer = new ObjectPlacer()
+    stableResource = new THREE.Group()
+    darkResource = new THREE.Group()
+    lightResource = new THREE.Group()
     constructor(
         private eventCtrl: IEventController,
         private worldMap: WorldMap,
@@ -27,6 +30,7 @@ export default class MapFactory {
         const groundMesh = blendedMap.obj
         const dataTexture = blendedMap.blendMap
         let occupied: PlacedUV[] = []
+        this.scene.add(this.darkResource, this.stableResource)
 
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             await this.makeInteractive(blendedMap)
@@ -46,8 +50,9 @@ export default class MapFactory {
             });
             occupied.push(...rockResult.occupiedUVs); // 점유 공간 업데이트
             // console.log(rockResult.placements)
-            this.autoMap(rockResult.placements, { countRange: [1, 1], windEnabled: false, type: MapEntryType.InstancedVegetation }, 
+            const res = this.autoMap(rockResult.placements, { countRange: [1, 1], windEnabled: false, type: MapEntryType.InstancedVegetation }, 
                 Char.QuaterniusNatureRockpathRoundSmall1)
+            this.darkResource.add(res)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
 
@@ -65,6 +70,7 @@ export default class MapFactory {
             occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트
             // console.log(treeResult.placements)
             const trees = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureDeadtree1)
+            this.darkResource.add(trees)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             const pResult = this.placer.generate(groundMesh, dataTexture, {
@@ -79,7 +85,8 @@ export default class MapFactory {
             });
             occupied.push(...pResult.occupiedUVs);
             // console.log(plantResult.placements)
-            this.autoMap(pResult.placements, { countRange: [1, 3] }, Char.QuaterniusNatureGrassCommonShort)
+            const res = this.autoMap(pResult.placements, { countRange: [1, 3] }, Char.QuaterniusNatureGrassCommonShort)
+            this.darkResource.add(res)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             // pass Edge
@@ -95,8 +102,9 @@ export default class MapFactory {
             });
             occupied.push(...pEdgeResult.occupiedUVs);
             // console.log(plantResult.placements)
-            const treesEdge = this.autoMap(pEdgeResult.placements, { countRange: [1, 3], 
+            const edge = this.autoMap(pEdgeResult.placements, { countRange: [1, 3], 
                 lodEnabled: false, cullingEnable: false, windEnabled: false  }, Char.QuaterniusNatureRockMedium1)
+            this.stableResource.add(edge)
 
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
@@ -113,7 +121,8 @@ export default class MapFactory {
             });
             occupied = plantResult.occupiedUVs;
             // console.log(plantResult.placements)
-            this.autoMap(plantResult.placements, { countRange: [8, 16], far: 100 })
+            const res = this.autoMap(plantResult.placements, { countRange: [8, 16], far: 100 })
+            this.stableResource.add(res)
         })
     }
     async makeInteractive(map: CustomGround) {
@@ -194,7 +203,6 @@ export default class MapFactory {
                 obj.SetFocusTarget(this.player.Meshs)
             }
         })
-        this.scene.add(res)
         return res
     }
     /**

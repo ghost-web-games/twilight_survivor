@@ -37,15 +37,16 @@ export default class QuestDialog {
     ) {
         this.rewardDom.innerText = "Reward"
 
-        const woodModal = new WoodModal()
+        const woodModal = new WoodModal({
+            show: () => { this.eventCtrl.SendEventMessage(EventTypes.TimeCtrl, 0) },
+            hide: () => { this.eventCtrl.SendEventMessage(EventTypes.TimeCtrl, 1) }
+        })
         woodModal.RenderHtml("Quest")
 
         const tap = new TapButton(document.body, {
             open: () => { woodModal.Show() },
             click: () => { woodModal.Hide() },
-            close: async () => { 
-                await woodModal.Hide() 
-            },
+            close: async () => { await woodModal.Hide() },
         })
         tap.AddChildDom(woodModal.GetContentElement())
         this.tap = tap
@@ -106,6 +107,7 @@ export default class QuestDialog {
             }
             
         })
+        this.vrGrid.RenderHTML()
     }
 
     itemGux(item: ItemProperty) {
@@ -117,7 +119,7 @@ export default class QuestDialog {
         itemInfoDom.innerText = prop.name + "\n"// + prop.description
         itemSpecDom.innerText = ("stats" in prop) ? this.getStatsDescription(prop.stats).join("\n") : ""
         itemInfoDom.classList.add("container")
-        itemSpecDom.classList.add("container")
+        itemSpecDom.classList.add("container", "game-text")
 
         const itemInfo = new SimpleGux({ dom: itemInfoDom, param: ["container", "w-100", "h-100", "rounded"], backgroundColor: "#e0e0e0" })
         const itemSpec = new SimpleGux({ dom: itemSpecDom, param: ["container", "w-100", "h-100", "rounded"], backgroundColor: "#e0e0e0" })

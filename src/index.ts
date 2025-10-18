@@ -93,7 +93,7 @@ export class TwilightSurvivor {
     invenFab = new InvenFactory(this.loader, this.eventCtrl)
     player = new Player(this.loader, this.loader.GetAssets(Char.CharHumanMale), this.eventCtrl, this.scene, this.invenFab.inven, this.audioListener)
     playerCtrl = new PlayerCtrl(this.player, this.invenFab.inven, this.physics, this.camera, this.eventCtrl)
-    monsters = new Monsters(this.loader, this.eventCtrl, this.scene, this.player, this.physics, this.monDb)
+    monsters = new Monsters(this.loader, this.eventCtrl, this.scene, this.player, this.physics, this.monDb, { nameView: false })
     projectile = new Projectile(this.eventCtrl, this.scene, this.playerCtrl.targets, this.monDb)
     drops = new Drops(this.loader, this.scene, this.eventCtrl, this.player)
     npc = new Npc(this.loader, this.loader.GetAssets(Char.UltimatePAPHeartHalf), this.eventCtrl, this.scene, this.invenFab)
@@ -231,8 +231,7 @@ export class TwilightSurvivor {
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
                 this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
-            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player, 
-                this.playerCtrl, this.monsters,
+            new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player,this.monsters,
                 this.quest, this.questDlg, this.invenDlg, this.ringMenu, this.sdom,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("tutorial",

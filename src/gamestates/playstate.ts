@@ -11,29 +11,29 @@ import { KeyType } from "@Glibs/types/eventtypes";
 import { DialogueManager } from "@Glibs/systems/alarm/dialoguemgr";
 import { QuestManager } from "@Glibs/systems/quests/questmgr";
 import { QuestId } from "@Glibs/systems/quests/questdef";
-import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import CampfireCtrl from "../gameobjects/campfirectrl";
 import { QuestLocalId } from "../localquests/questdata";
 import { RainStorm } from "@Glibs/world/rain/rainstorm";
-import QuestDialog from "src/localquests/questdlg";
+import QuestDialog from "../localquests/questdlg";
 import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
-import InvenDialog from "src/dialogs/invendlg";
+import InvenDialog from "../dialogs/invendlg";
 import MenuGroup from "@Glibs/ux/menuicons/menugroup";
 import { Monsters } from "@Glibs/actors/monsters/monsters";
 import { MonsterId } from "@Glibs/types/monstertypes";
 import { itemDefs } from "@Glibs/inventory/items/itemdefs";
 import { clearAllPendingTimers, createManagedTimeout } from "./utils";
+import CompleteDialog from "../dialogs/completedlg";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
     get TaskObj() { return this.taskObj }
     get Physics() { return this.phyObj }
+    compDlg = new CompleteDialog(this.eventCtrl)
     constructor(
         private eventCtrl: IEventController,
         private camera: Camera,
         private dialogue: DialogueManager,
         private player: Player,
-        private playerCtrl: PlayerCtrl,
         private monsters: Monsters,
         private quest: QuestManager,
         private questDlg: QuestDialog,
@@ -83,10 +83,19 @@ export default class PlayState implements IGameMode {
             },
         ]
         this.dialogue.runScript(survivorScript)
+        const finalScript = [
+            { type: 'action', func: () => { this.storymode() } },
+            { type: 'dialogue', key: KeyType.Action1, text: "정신이 아늑해진다..." },
+            { type: 'action', func: () => { 
+                this.compDlg.Show()
+                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "day")
+            } },
+        ]
         this.eventCtrl.RegisterEventListener(EventTypes.QuestStateChanged, (ret: { questId: QuestId, status: string }) => {
             if (ret.status !== "COMPLETED") return
             switch (ret.questId) {
-                case QuestLocalId.Q007_HUNTING_ZOMBIE: {
+                case QuestLocalId.Q008_LAST_MISSION: {
+                    this.dialogue.runScript(finalScript)
                     break;
                 }
             }

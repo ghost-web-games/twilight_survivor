@@ -95,7 +95,7 @@ export const newQuestDefs = {
             "level": 1
         },
         "objectives": [
-            { "type": "kill", "targetId": MonsterId.Zombie, "amount": 100 },
+            { "type": "kill", "targetId": MonsterId.Zombie, "amount": 2 },
         ],
         "rewards": {
             "experience": 100,

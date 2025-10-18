@@ -25,19 +25,22 @@ export default class QuestCompleteDialog {
         private quest: QuestManager,
         private invenFab: InvenFactory
     ) {
-        this.woodModal = new WoodModal()
+        this.woodModal = new WoodModal({
+            show: () => { 
+                this.eventCtrl.SendEventMessage(EventTypes.TimeCtrl, 0) 
+                this.eventCtrl.SendEventMessage(EventTypes.Confetti, true)
+            },
+            hide: () => { 
+                this.eventCtrl.SendEventMessage(EventTypes.TimeCtrl, 1) 
+                this.eventCtrl.SendEventMessage(EventTypes.Confetti, false)
+            }
+        })
         this.woodModal.RenderHtml("Quest Complete")
 
         const tap = new TapButton(document.body, {
-            open: () => {
-                this.woodModal.Show()
-                this.eventCtrl.SendEventMessage(EventTypes.Confetti, true)
-            },
+            open: () => { this.woodModal.Show() },
             click: () => { this.woodModal.Hide() },
-            close: async () => {
-                await this.woodModal.Hide()
-                this.eventCtrl.SendEventMessage(EventTypes.Confetti, false)
-            },
+            close: async () => { await this.woodModal.Hide() },
         })
 
         tap.AddChildDom(this.woodModal.GetContentElement())

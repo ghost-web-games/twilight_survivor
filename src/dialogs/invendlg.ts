@@ -156,16 +156,16 @@ export default class InvenDialog {
     }
     makeItemViewDlg() {
         const itemInfo = new SimpleGux({ dom: this.itemInfo, param: ["container", "w-100", "h-100", "rounded"], backgroundColor: "#e0e0e0" })
-        const itemSpec = new SimpleGux({ dom: this.itemSpec, param: ["container", "w-100", "h-100", "rounded"], backgroundColor: "#00ff00" })
+        const itemSpec = new SimpleGux({ dom: this.itemSpec, param: ["container", "w-100", "h-100", "rounded"], backgroundColor: "#e0e0e0" })
         this.itemInfo.classList.add("container")
-        this.itemSpec.classList.add("container")
+        this.itemSpec.classList.add("container", "game-text")
 
         const grid = new Grid({ margin: "m-0" })
         grid.AddChild(this.itemInfoSlot, { colClassList: ["col-auto", "p-0"] })
         grid.AddChild(itemInfo, { colClassList: ["p-0"] })
+        grid.RenderHTML()
 
         const vGrid = new Grid({ vertical: true })
-        vGrid.AddChild(grid)
         vGrid.AddChild(itemSpec, { colClassList: ["p-0"], rowClassList: ["m-0", "p-0"] })
 
         const okBtn = new GameButton({
@@ -181,6 +181,7 @@ export default class InvenDialog {
 
         const itemModal = new WoodModal()
         itemModal.RenderHtml("Item Info")
+        itemModal.AddChild(grid)
         itemModal.AddChild(vGrid)
         return itemModal
     }
