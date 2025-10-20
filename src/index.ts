@@ -59,6 +59,10 @@ import StatusCtrl from './gameobjects/statusctrl'
 import MenuGroup from '@Glibs/ux/menuicons/menugroup'
 import { GlobalEffector } from '@Glibs/magical/effects/globaleffector'
 import PlayState from './gamestates/playstate'
+import LoadingMgr from '@Glibs/ux/loading/loadingmgr'
+import { SimpleCircleProgressBar } from '@Glibs/ux/progress/simplecirclebar'
+import LoadingDialog from './dialogs/loadingdlg'
+import DayState from './gamestates/daystate'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -140,6 +144,9 @@ export class TwilightSurvivor {
     statusCtrl = new StatusCtrl(this.eventCtrl, this.playerCtrl, this.heartBar)
 
     fog = new THREE.FogExp2(0x87ceeb, 0.0025 * 5);
+
+    loadMgr = new LoadingMgr(this.eventCtrl, new SimpleCircleProgressBar({ preset: 'Rainbow' }))
+    loadDlg = new LoadingDialog(this.eventCtrl, this.loadMgr, this.mapFab)
 
     constructor() {
         console.log('Twilight Survivor')
@@ -232,8 +239,12 @@ export class TwilightSurvivor {
                 this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
             new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player,this.monsters,
-                this.quest, this.questDlg, this.invenDlg, this.ringMenu, this.sdom,
+                this.quest, this.questDlg, this.invenDlg, this.loadDlg, this.ringMenu, this.sdom,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
+        this.gamecenter.RegisterGameMode("dayplay",
+            new DayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl, this.monsters,
+                this.fog, this.quest, this.questDlg, this.invenDlg, this.loadDlg, this.ringMenu, this.sdom,
+                this.campctrl, [], [], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("tutorial",
             new TutorialState(this.eventCtrl, this.camera, this.dialogue, this.player, 
                 this.playerCtrl, this.monsters,

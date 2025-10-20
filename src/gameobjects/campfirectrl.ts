@@ -42,6 +42,14 @@ export default class CampfireCtrl {
     uninit() { 
         this.timer && clearTimeout(this.timer)
     }
+    Enable(onoff: boolean) {
+        if(onoff) {
+            this.loop()
+        } else {
+            this.eventCtrl.SendEventMessage(EventTypes.DarkParticle, 0);
+            clearTimeout(this.timer)
+        }
+    }
 
     loop() {
         this.timer = setTimeout(() => {

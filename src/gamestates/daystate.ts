@@ -10,6 +10,17 @@ import { Camera } from "@Glibs/systems/camera/camera";
 import { Npc } from "@Glibs/actors/npc/npc";
 import { DefaultPosition } from "../index";
 import MapFactory from "src/mapfactory";
+import { DialogueManager } from "@Glibs/systems/alarm/dialoguemgr";
+import { Monsters } from "@Glibs/actors/monsters/monsters";
+import { QuestManager } from "@Glibs/systems/quests/questmgr";
+import QuestDialog from "../localquests/questdlg";
+import LoadingDialog from "../dialogs/loadingdlg";
+import InvenDialog from "../dialogs/invendlg";
+import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
+import MenuGroup from "@Glibs/ux/menuicons/menugroup";
+import CampfireCtrl from "../gameobjects/campfirectrl";
+import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
+import { Bind } from "@Glibs/types/assettypes";
 
 export default class DayState implements IGameMode {
     get Objects() { return this.objs }
@@ -18,8 +29,18 @@ export default class DayState implements IGameMode {
     constructor(
         private eventCtrl: IEventController,
         private camera: Camera,
+        private dialogue: DialogueManager,
         private player: Player,
-        private mapFab: MapFactory,
+        private playerCtrl: PlayerCtrl,
+        private monsters: Monsters,
+        private fog: THREE.FogExp2,
+        private quest: QuestManager,
+        private questDlg: QuestDialog,
+        private invenDlg: InvenDialog,
+        private loadingDlg: LoadingDialog,
+        private ringMenu: RadialMenuUI,
+        private sdom: MenuGroup,
+        private campCtrl: CampfireCtrl,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         private taskObj: ILoop[] = [],
         private phyObj: IPhysicsObject[] = [],
@@ -27,6 +48,21 @@ export default class DayState implements IGameMode {
 
     }
     async Init() {
+        this.ringMenu.mount(document.body)
+        this.camera.controls.enabled = true
+        this.monsters.ReleaseMonster()
+        this.campCtrl.Enable(false)
+        this.eventCtrl.SendEventMessage(EventTypes.JoypadOn, InputMode.Joystick)
+        this.eventCtrl.SendEventMessage(EventTypes.JoypadOn, InputMode.Buttons)
+        this.eventCtrl.SendEventMessage(EventTypes.Unequipment, Bind.Hands_R)
+        this.eventCtrl.SendEventMessage(EventTypes.Unequipment, Bind.Hands_L)
+        this.fog.density = 0.0025 * 2
+
+        this.player.Pos.copy(DefaultPosition)
+        this.playerCtrl.reset()
+        this.playerCtrl.init()
+        this.playerCtrl.changeState(this.playerCtrl.SleepingIdleSt)
+        this.eventCtrl.SendEventMessage(EventTypes.DayNightCtrl, { v: 0, auto: false })
     }
     Uninit(): void {
     }

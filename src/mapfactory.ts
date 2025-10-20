@@ -9,26 +9,98 @@ import { Char } from '@Glibs/types/assettypes';
 import { CampfierPos } from './index';
 import { Player } from '@Glibs/actors/player/player';
 import { WindyInstancedVegetation } from '@Glibs/world/fluffynature/massfluffy';
+import { SimpleCircleProgressBar } from '@Glibs/ux/progress/simplecirclebar';
+import TapButton from '@Glibs/ux/buttons/tapbutton';
 
 export default class MapFactory {
     placer = new ObjectPlacer()
     stableResource = new THREE.Group()
     darkResource = new THREE.Group()
     lightResource = new THREE.Group()
+
+    flower?: THREE.Group
+    darktrees?: THREE.Group
+    tree?: THREE.Group
+    grass?: THREE.Group
+    defaultGrass?: THREE.Group
+    edge?: THREE.Group
+    groundMesh?: THREE.Mesh
+    dataTexture?: THREE.DataTexture
+
+    darkLoaded = false
+    lightLoaded = false
+
     constructor(
         private eventCtrl: IEventController,
         private worldMap: WorldMap,
         private scene: THREE.Scene,
         private player: Player
-    ) { }
+    ) { 
+    }
+    NightLoad() {
+        if (this.lightLoaded) {
+            this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
+                this.scene.remove(this.lightResource)
+                this.scene.add(this.darkResource)
+            })
+            return
+        }
+    }
+    DayLoad() {
+        if (this.lightLoaded) {
+            this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
+                this.scene.remove(this.darkResource)
+                this.scene.add(this.lightResource)
+            })
+            return
+        }
+        let occupied: PlacedUV[] = []
+        this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
+            const treeResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
+                seed: 200,
+                pattern: 'tree',
+                density: 2.0,
+                minRadius: 2.5,
+                numKinds: 5,
+                scaleMin: 1.2,
+                scaleRange: 0.2,
+                occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
+            });
+            occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트
+            // console.log(treeResult.placements)
+            this.tree = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureCommontree1)
+            this.lightResource.add(this.tree)
+        })
+        this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
+            const pResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
+                seed: 301,
+                pattern: 'flower',
+                density: 3.0,
+                minRadius: 0.5,
+                numKinds: 4,
+                scaleMin: 0.8,
+                scaleRange: 0.6,
+                occupiedUVs: occupied,
+            });
+            occupied.push(...pResult.occupiedUVs);
+            // console.log(plantResult.placements)
+            this.flower = this.autoMap(pResult.placements, { countRange: [1, 2] }, Char.QuaterniusNatureFlower3Group)
+            this.lightResource.add(this.flower)
+        })
+        this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
+            this.lightLoaded = true
+            this.scene.remove(this.darkResource)
+            this.scene.add(this.lightResource)
+        })
+    }
     async MakeMap() {
         const map = await this.worldMap.MakeMapObject()
         this.scene.add(map)
         await this.worldMap.MakeMapObject(MapEntryType.Beach, map)
 
         const blendedMap = this.worldMap.GetMapObject() as CustomGround
-        const groundMesh = blendedMap.obj
-        const dataTexture = blendedMap.blendMap
+        this.groundMesh = blendedMap.obj
+        this.dataTexture = blendedMap.blendMap
         let occupied: PlacedUV[] = []
         this.scene.add(this.darkResource, this.stableResource)
 
@@ -37,27 +109,8 @@ export default class MapFactory {
         })
 
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
-            // Pass 1: 바위 배치 (흙 지역에만)
-            const rockResult = this.placer.generate(groundMesh, dataTexture, {
-                seed: 100,
-                pattern: 'rock',
-                density: 1.0,
-                minRadius: 2.8,
-                numKinds: 5,
-                scaleMin: 0.7,
-                scaleRange: 0.8,
-                occupiedUVs: occupied, // 처음에는 빈 배열
-            });
-            occupied.push(...rockResult.occupiedUVs); // 점유 공간 업데이트
-            // console.log(rockResult.placements)
-            const res = this.autoMap(rockResult.placements, { countRange: [1, 1], windEnabled: false, type: MapEntryType.InstancedVegetation }, 
-                Char.QuaterniusNatureRockpathRoundSmall1)
-            this.darkResource.add(res)
-        })
-        this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
-
             // Pass 2: 나무 배치 (식생 지역, 군집)
-            const treeResult = this.placer.generate(groundMesh, dataTexture, {
+            const treeResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
                 seed: 200,
                 pattern: 'tree',
                 density: 2.0,
@@ -69,11 +122,11 @@ export default class MapFactory {
             });
             occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트
             // console.log(treeResult.placements)
-            const trees = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureDeadtree1)
-            this.darkResource.add(trees)
+            this.darktrees = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureDeadtree1)
+            this.darkResource.add(this.darktrees)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
-            const pResult = this.placer.generate(groundMesh, dataTexture, {
+            const pResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
                 seed: 300,
                 pattern: 'flower',
                 density: 8.8,
@@ -85,12 +138,12 @@ export default class MapFactory {
             });
             occupied.push(...pResult.occupiedUVs);
             // console.log(plantResult.placements)
-            const res = this.autoMap(pResult.placements, { countRange: [1, 3] }, Char.QuaterniusNatureGrassCommonShort)
-            this.darkResource.add(res)
+            this.grass = this.autoMap(pResult.placements, { countRange: [1, 3] }, Char.QuaterniusNatureGrassCommonShort)
+            this.stableResource.add(this.grass)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             // pass Edge
-            const pEdgeResult = this.placer.generate(groundMesh, dataTexture, {
+            const pEdgeResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
                 seed: 500,
                 pattern: 'edge',
                 density: 5.8,
@@ -102,14 +155,14 @@ export default class MapFactory {
             });
             occupied.push(...pEdgeResult.occupiedUVs);
             // console.log(plantResult.placements)
-            const edge = this.autoMap(pEdgeResult.placements, { countRange: [1, 3], 
+            this.edge = this.autoMap(pEdgeResult.placements, { countRange: [1, 3], 
                 lodEnabled: false, cullingEnable: false, windEnabled: false  }, Char.QuaterniusNatureRockMedium1)
-            this.stableResource.add(edge)
+            this.stableResource.add(this.edge)
 
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             // Pass 3: 식물 배치 (식생 지역, 군집)
-            const plantResult = this.placer.generate(groundMesh, dataTexture, {
+            const plantResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
                 seed: 300,
                 pattern: 'flower',
                 density: 8.8,
@@ -121,8 +174,9 @@ export default class MapFactory {
             });
             occupied = plantResult.occupiedUVs;
             // console.log(plantResult.placements)
-            const res = this.autoMap(plantResult.placements, { countRange: [8, 16], far: 100 })
-            this.stableResource.add(res)
+            this.defaultGrass = this.autoMap(plantResult.placements, { countRange: [8, 16], far: 100 })
+            this.stableResource.add(this.defaultGrass)
+            this.darkLoaded = true
         })
     }
     async makeInteractive(map: CustomGround) {

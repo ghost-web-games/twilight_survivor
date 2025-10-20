@@ -18,12 +18,14 @@ import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import { Char } from "@Glibs/loader/assettypes";
 import { Grid } from "@Glibs/ux/grid/grid";
 import { SimpleGux } from "@Glibs/ux/gux";
+import DebugDialog from "../dialogs/debugdlg";
 
 export default class MenuState implements IGameMode {
     get Objects() { return this.objs }
     get TaskObj() { return this.taskObj }
     get Physics() { return this.phyObj }
     sysdlg = new SystemDialog()
+    debugDlg = new DebugDialog(this.eventCtrl)
 
     mdom: MenuGroup
 
@@ -66,7 +68,7 @@ export default class MenuState implements IGameMode {
         
         this.mdom = new MenuGroup(document.body, { bottom: "0px", opacity: "0" })
         this.mdom.addMenu(new MenuIcon({ icon: Icons.Setting, color: IconsColor.Yellow, boxEnable: true, click: () => { this.sysdlg.show() } }))
-        this.mdom.addMenu(new MenuIcon({ icon: Icons.BlueBook, color: IconsColor.Yellow, boxEnable: true, click: () => {  } }))
+        this.mdom.addMenu(new MenuIcon({ icon: Icons.BlueBook, color: IconsColor.Yellow, boxEnable: true, click: () => { this.debugDlg.show() } }))
     }
     tl: gsap.core.Timeline = gsap.timeline()
     async Init() {

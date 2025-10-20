@@ -23,6 +23,7 @@ import { MonsterId } from "@Glibs/types/monstertypes";
 import { itemDefs } from "@Glibs/inventory/items/itemdefs";
 import { clearAllPendingTimers, createManagedTimeout } from "./utils";
 import CompleteDialog from "../dialogs/completedlg";
+import LoadingDialog from "src/dialogs/loadingdlg";
 
 export default class PlayState implements IGameMode {
     get Objects() { return this.objs }
@@ -38,6 +39,7 @@ export default class PlayState implements IGameMode {
         private quest: QuestManager,
         private questDlg: QuestDialog,
         private invenDlg: InvenDialog,
+        private loadingDlg: LoadingDialog,
         private ringMenu: RadialMenuUI,
         private sdom: MenuGroup,
         private campCtrl: CampfireCtrl,
@@ -71,7 +73,7 @@ export default class PlayState implements IGameMode {
                     this.eventCtrl.SendEventMessage(EventTypes.Pickup, itemDefs.Hanhwasbat.id)
                 }
             },
-            { type: 'dialogue', key: KeyType.Action1, text: "목소리: 이제 좀비가 몰려와. 100마리를 사냥하면 여기서 탈출할 수 있을거야." },
+            { type: 'dialogue', key: KeyType.Action3, text: "목소리: 이제 좀비가 몰려와. 100마리를 사냥하면 여기서 탈출할 수 있을거야." },
             {
                 type: 'action', func: () => {
                     this.playmode()
@@ -84,11 +86,21 @@ export default class PlayState implements IGameMode {
         ]
         this.dialogue.runScript(survivorScript)
         const finalScript = [
-            { type: 'action', func: () => { this.storymode() } },
-            { type: 'dialogue', key: KeyType.Action1, text: "정신이 아늑해진다..." },
+            { type: 'action', func: () => { 
+                this.storymode() 
+                this.monsters.ReleaseMonster()
+                clearAllPendingTimers()
+            } },
+            { type: 'dialogue', key: KeyType.Action3, text: "정신이 아늑해진다..." },
             { type: 'action', func: () => { 
                 this.compDlg.Show()
-                this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "day")
+            } },
+            { type: 'dialogue', key: KeyType.Action3, text: "목소리: 다음에 봐" },
+            { type: 'action', func: () => { 
+                this.loadingDlg.DayShow()
+                this.playmode()
+                this.eventCtrl.SendEventMessage(EventTypes.JoypadOff, InputMode.Joystick)
+                this.eventCtrl.SendEventMessage(EventTypes.JoypadOff, InputMode.Buttons)
             } },
         ]
         this.eventCtrl.RegisterEventListener(EventTypes.QuestStateChanged, (ret: { questId: QuestId, status: string }) => {
@@ -130,9 +142,9 @@ export default class PlayState implements IGameMode {
         this.eventCtrl.SendEventMessage(EventTypes.JoypadOn, InputMode.Buttons)
         this.eventCtrl.SendEventMessage(EventTypes.InputButtonEnable, [
             { button: "Space", enabled: false },
-            { button: "Action1", enabled: true },
+            { button: "Action1", enabled: false },
             { button: "Action2", enabled: false },
-            { button: "Action3", enabled: false },
+            { button: "Action3", enabled: true },
         ])
     }
 }
