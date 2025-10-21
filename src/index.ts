@@ -63,6 +63,7 @@ import LoadingMgr from '@Glibs/ux/loading/loadingmgr'
 import { SimpleCircleProgressBar } from '@Glibs/ux/progress/simplecirclebar'
 import LoadingDialog from './dialogs/loadingdlg'
 import DayState from './gamestates/daystate'
+import DebugDialog from './dialogs/debugdlg'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -103,7 +104,7 @@ export class TwilightSurvivor {
     npc = new Npc(this.loader, this.loader.GetAssets(Char.UltimatePAPHeartHalf), this.eventCtrl, this.scene, this.invenFab)
     npcCtrl = new NpcCtrl(this.npc, this.invenFab.inven, this.physics, this.camera, this.eventCtrl, this.playerCtrl.IdleSt)
 
-    light = new DefaultLights(this.scene)
+    light = new DefaultLights(this.scene, this.eventCtrl)
     worldMap = new WorldMap(this.loader, this.scene, this.eventCtrl, this.light, this.camera, this.renderer)
     mapFab = new MapFactory(this.eventCtrl, this.worldMap, this.scene, this.player)
 
@@ -147,6 +148,8 @@ export class TwilightSurvivor {
 
     loadMgr = new LoadingMgr(this.eventCtrl, new SimpleCircleProgressBar({ preset: 'Rainbow' }))
     loadDlg = new LoadingDialog(this.eventCtrl, this.loadMgr, this.mapFab)
+
+    debugDlg = new DebugDialog(this.eventCtrl, this.loadDlg)
 
     constructor() {
         console.log('Twilight Survivor')
@@ -236,7 +239,7 @@ export class TwilightSurvivor {
                 [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("menumode",
             new MenuState(this.eventCtrl, this.loader, this.player, this.playerCtrl,
-                this.scene, this.camera, [], [stormRain], [this.player,]))
+                this.debugDlg, this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
             new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player,this.monsters,
                 this.quest, this.questDlg, this.invenDlg, this.loadDlg, this.ringMenu, this.sdom,

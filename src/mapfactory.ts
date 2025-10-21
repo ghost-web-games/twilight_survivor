@@ -59,23 +59,23 @@ export default class MapFactory {
             const treeResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
                 seed: 200,
                 pattern: 'tree',
-                density: 2.0,
+                density: 9.0,
                 minRadius: 2.5,
                 numKinds: 5,
-                scaleMin: 1.2,
-                scaleRange: 0.2,
+                scaleMin: 3,
+                scaleRange: 1,
                 occupiedUVs: occupied, // 이전 단계의 점유 공간 전달
             });
             occupied.push(...treeResult.occupiedUVs); // 점유 공간 다시 업데이트
             // console.log(treeResult.placements)
-            this.tree = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 120 }, Char.QuaterniusNatureCommontree1)
+            this.tree = this.autoMap(treeResult.placements, { countRange: [1, 1], far: 140 }, Char.QuaterniusNatureCommontree1)
             this.lightResource.add(this.tree)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
             const pResult = this.placer.generate(this.groundMesh!, this.dataTexture, {
                 seed: 301,
                 pattern: 'flower',
-                density: 3.0,
+                density: 1.0,
                 minRadius: 0.5,
                 numKinds: 4,
                 scaleMin: 0.8,
@@ -84,7 +84,7 @@ export default class MapFactory {
             });
             occupied.push(...pResult.occupiedUVs);
             // console.log(plantResult.placements)
-            this.flower = this.autoMap(pResult.placements, { countRange: [1, 2] }, Char.QuaterniusNatureFlower3Group)
+            this.flower = this.autoMap(pResult.placements, { countRange: [1, 1] }, Char.QuaterniusNatureFlower3Group)
             this.lightResource.add(this.flower)
         })
         this.eventCtrl.SendEventMessage(EventTypes.RegLoadingCommonItems, async () => {
@@ -205,6 +205,8 @@ export default class MapFactory {
         Object.values(f).forEach(async (objs) => {
             const charId = (startCharId) ? startCharId + objs[0].kind : undefined
             objs.forEach(async (obj) => {
+                const uv = this.getUvOnPlane(obj.position, map.obj)
+                if (uv) map.Click(uv)
                 await this.worldMap.MakeMapObject(MapEntryType.Interactive, { 
                     type: charId, position: obj.position, rotation: obj.rotation, scale: obj.scale,
                     boxType: "tree" 
@@ -266,10 +268,12 @@ export default class MapFactory {
  * @returns {THREE.Vector2 | null} 계산된 UV 좌표. 교차점이 없으면 null을 반환합니다.
  */
     getUvOnPlane(worldPoint: THREE.Vector3, planeMesh: THREE.Mesh) {
+        const temp = worldPoint.clone()
+        temp.y = 10
         // 1. Raycaster 설정
         const raycaster = new THREE.Raycaster();
         const rayDirection = new THREE.Vector3(0, -1, 0); // 수직 아래 방향
-        raycaster.set(worldPoint, rayDirection);
+        raycaster.set(temp, rayDirection);
 
         // 2. 교차점 계산
         const intersects = raycaster.intersectObject(planeMesh);

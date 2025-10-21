@@ -50,6 +50,11 @@ export default class DayState implements IGameMode {
     async Init() {
         this.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
+        this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
+        this.eventCtrl.SendEventMessage(EventTypes.OrbitControlsOnOff, true)
+        this.eventCtrl.SendEventMessage(EventTypes.CtrlObj, this.player)
+        this.eventCtrl.SendEventMessage(EventTypes.Spinner, false)
+
         this.monsters.ReleaseMonster()
         this.campCtrl.Enable(false)
         this.eventCtrl.SendEventMessage(EventTypes.JoypadOn, InputMode.Joystick)

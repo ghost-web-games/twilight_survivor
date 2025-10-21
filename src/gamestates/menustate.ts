@@ -19,13 +19,13 @@ import { Char } from "@Glibs/loader/assettypes";
 import { Grid } from "@Glibs/ux/grid/grid";
 import { SimpleGux } from "@Glibs/ux/gux";
 import DebugDialog from "../dialogs/debugdlg";
+import MapFactory from "src/mapfactory";
 
 export default class MenuState implements IGameMode {
     get Objects() { return this.objs }
     get TaskObj() { return this.taskObj }
     get Physics() { return this.phyObj }
     sysdlg = new SystemDialog()
-    debugDlg = new DebugDialog(this.eventCtrl)
 
     mdom: MenuGroup
 
@@ -35,6 +35,7 @@ export default class MenuState implements IGameMode {
         private loader: Loader,
         private player: Player,
         private playerCtrl: PlayerCtrl,
+        private debugDlg: DebugDialog,
         private scene: THREE.Scene,
         private camera: Camera,
         private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
