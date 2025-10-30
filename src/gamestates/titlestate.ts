@@ -91,7 +91,6 @@ export default class TitleState implements IGameMode {
             }
         })
         this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff + "player", new Buff(buffDefs.DarkSide))
-        this.eventCtrl.SendEventMessage(EventTypes.UpdateBuff + "npc", new Buff(buffDefs.DarkSide))
         this.eventCtrl.SendEventMessage(EventTypes.PlayBGM, "whisper", SoundType.WhispersOfEldertree, { loop: true })
         this.eventCtrl.SendEventMessage(EventTypes.CampfireCtrl, 0)
         this.eventCtrl.SendEventMessage(EventTypes.DayNightCtrl, { v: 0.45, auto: false })
