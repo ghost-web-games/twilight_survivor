@@ -21,13 +21,12 @@ import MenuGroup from "@Glibs/ux/menuicons/menugroup";
 import CampfireCtrl from "../gameobjects/campfirectrl";
 import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import { Bind } from "@Glibs/types/assettypes";
+import AbstractState from "./abstractstate";
+import DialogFactory from "src/dialogs/dialogfab";
 
-export default class DayState implements IGameMode {
-    get Objects() { return this.objs }
-    get TaskObj() { return this.taskObj }
-    get Physics() { return this.phyObj }
+export default class DayState extends AbstractState {
     constructor(
-        private eventCtrl: IEventController,
+        protected eventCtrl: IEventController,
         private camera: Camera,
         private dialogue: DialogueManager,
         private player: Player,
@@ -35,19 +34,23 @@ export default class DayState implements IGameMode {
         private monsters: Monsters,
         private fog: THREE.FogExp2,
         private quest: QuestManager,
-        private questDlg: QuestDialog,
-        private invenDlg: InvenDialog,
+        private dialogFab: DialogFactory,
         private loadingDlg: LoadingDialog,
         private ringMenu: RadialMenuUI,
         private sdom: MenuGroup,
         private campCtrl: CampfireCtrl,
-        private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
-        private taskObj: ILoop[] = [],
-        private phyObj: IPhysicsObject[] = [],
+        objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
+        taskObj: ILoop[] = [],
+        phyObj: IPhysicsObject[] = [],
     ) { 
-
+        super(eventCtrl, objs, taskObj, phyObj)
     }
     async Init() {
+        this.ringMenu.setItems([
+            // { type: 'img', value: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f392.svg' },
+            { icon: { type: 'webfontMS', value: 'personal_bag' }, onSelect: () => { this.dialogFab.openInventory() } },
+            { icon: { type: 'webfontMS', value: 'exclamation' }, onSelect: () => { this.dialogFab.openQuestLog() } },
+        ]);
         this.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)

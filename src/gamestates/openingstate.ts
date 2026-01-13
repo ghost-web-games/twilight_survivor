@@ -9,21 +9,19 @@ import { InputMode } from "@Glibs/systems/inputs/input";
 import { Camera } from "@Glibs/systems/camera/camera";
 import { Npc } from "@Glibs/actors/npc/npc";
 import { DefaultPosition } from "../index";
+import AbstractState from "./abstractstate";
 
-export default class OpeningState implements IGameMode {
-    get Objects() { return this.objs }
-    get TaskObj() { return this.taskObj }
-    get Physics() { return this.phyObj }
+export default class OpeningState extends AbstractState implements IGameMode {
     constructor(
-        private eventCtrl: IEventController,
+        protected eventCtrl: IEventController,
         private camera: Camera,
         private player: Player,
         private npc: Npc,
-        private objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
-        private taskObj: ILoop[] = [],
-        private phyObj: IPhysicsObject[] = [],
+        objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
+        taskObj: ILoop[] = [],
+        phyObj: IPhysicsObject[] = [],
     ) { 
-
+        super(eventCtrl, objs, taskObj, phyObj)
     }
     async Init() {
         this.npc.Visible = true

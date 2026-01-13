@@ -56,8 +56,8 @@ export default class MenuState implements IGameMode {
                 this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "tutorial")
             }
         })
-        grid.AddChild(new SimpleGux({ dom: icon.dom, param: ["container", "w-100", "h-100", "rounded"] }))
-        grid.AddChild(new SimpleGux({ dom: openingIcon.dom, param: ["container", "w-100", "h-100", "rounded"] }))
+        grid.AddChild(new SimpleGux({ dom: icon.Dom, param: ["container", "w-100", "h-100", "rounded"] }))
+        grid.AddChild(new SimpleGux({ dom: openingIcon.Dom, param: ["container", "w-100", "h-100", "rounded"] }))
         grid.RenderHTML()
 
         iconDiv.style.position = "absolute"
