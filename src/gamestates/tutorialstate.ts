@@ -16,14 +16,14 @@ import CampfireCtrl from "../gameobjects/campfirectrl";
 import { QuestLocalId } from "../localquests/questdata";
 import { RainStorm } from "@Glibs/world/rain/rainstorm";
 import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
-import MenuGroup from "@Glibs/ux/menuicons/menugroup";
 import { Monsters } from "@Glibs/actors/monsters/monsters";
 import { MonsterId } from "@Glibs/types/monstertypes";
 import { clearAllPendingTimers, createManagedTimeout } from "./utils";
 import CompleteDialog from "../dialogs/completedlg";
 import LoadingDialog from "../dialogs/loadingdlg";
-import DialogFactory from "../dialogs/dialogfab";
+import DialogFactory from "../gamefab/dialogfab";
 import AbstractState from "./abstractstate";
+import { TSEventTypes } from "../types/commontypes";
 
 export default class TutorialState extends AbstractState {
     compDlg = new CompleteDialog(this.eventCtrl)
@@ -38,7 +38,6 @@ export default class TutorialState extends AbstractState {
         private dialogFab: DialogFactory,
         private loadingDlg: LoadingDialog,
         private ringMenu: RadialMenuUI,
-        private sdom: MenuGroup,
         private campCtrl: CampfireCtrl,
         private stormRain: RainStorm,
         objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
@@ -115,7 +114,7 @@ export default class TutorialState extends AbstractState {
             { type: 'dialogue', key: KeyType.Action3, text: "목소리: 그 때마다 모닥불을 찾아가야해" },
             {
                 type: 'action', func: () => {
-                    this.sdom.Show()
+                    this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: true })
                     this.quest.startQuest(QuestLocalId.Q006_ESCAPE_DARKSIDE)
                     this.playmode()
                     this.eventCtrl.SendEventMessage(EventTypes.DeregisterLoop, this.stormRain)
@@ -221,7 +220,7 @@ export default class TutorialState extends AbstractState {
     Uninit(): void {
         this.campCtrl.uninit()
         this.ringMenu.unmount()
-        this.sdom.Hide()
+        this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: false })
         clearAllPendingTimers()
     }
     Renderer(r: IPostPro, delta: number): void {

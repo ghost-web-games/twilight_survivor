@@ -1,28 +1,22 @@
 import * as THREE from "three";
 import IEventController, { ILoop } from '@Glibs/interface/ievent';
 import { IPhysicsObject } from '@Glibs/interface/iobject';
-import { IGameMode } from '@Glibs/systems/gamecenter/gamecenter'
 import { IPostPro } from '@Glibs/systems/postprocess/postpro'
 import { EventTypes } from '@Glibs/types/globaltypes';
 import { Player } from "@Glibs/actors/player/player";
 import { InputMode } from "@Glibs/systems/inputs/input";
 import { Camera } from "@Glibs/systems/camera/camera";
-import { Npc } from "@Glibs/actors/npc/npc";
 import { DefaultPosition } from "../index";
-import MapFactory from "src/mapfactory";
 import { DialogueManager } from "@Glibs/systems/alarm/dialoguemgr";
 import { Monsters } from "@Glibs/actors/monsters/monsters";
 import { QuestManager } from "@Glibs/systems/quests/questmgr";
-import QuestDialog from "../localquests/questdlg";
 import LoadingDialog from "../dialogs/loadingdlg";
-import InvenDialog from "../dialogs/invendlg";
 import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
-import MenuGroup from "@Glibs/ux/menuicons/menugroup";
 import CampfireCtrl from "../gameobjects/campfirectrl";
 import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
 import { Bind } from "@Glibs/types/assettypes";
 import AbstractState from "./abstractstate";
-import DialogFactory from "src/dialogs/dialogfab";
+import DialogFactory from "../gamefab/dialogfab";
 
 export default class DayState extends AbstractState {
     constructor(
@@ -37,7 +31,6 @@ export default class DayState extends AbstractState {
         private dialogFab: DialogFactory,
         private loadingDlg: LoadingDialog,
         private ringMenu: RadialMenuUI,
-        private sdom: MenuGroup,
         private campCtrl: CampfireCtrl,
         objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
         taskObj: ILoop[] = [],

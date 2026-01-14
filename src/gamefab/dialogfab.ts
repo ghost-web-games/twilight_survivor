@@ -212,7 +212,7 @@ export default class DialogFactory {
           if (myQuest.rewards.gold) 
             this.eventCtrl.SendEventMessage(EventTypes.Gold, myQuest.rewards.gold);
           myQuest.rewards.items?.forEach(rw => 
-            this.eventCtrl.SendEventMessage(EventTypes.Pickup, rw.itemId, rw.amount));
+            this.eventCtrl.SendEventMessage(EventTypes.Reward, rw.itemId, rw.amount));
   
           // 2. 선택 보상 지급 (selectiveRewards)
           if (myQuest.selectiveRewards) {
@@ -220,7 +220,7 @@ export default class DialogFactory {
               if (choiceIndex !== null && myQuest.selectiveRewards.items) {
                   const selected = myQuest.selectiveRewards.items[choiceIndex];
                   if (selected) {
-                      this.eventCtrl.SendEventMessage(EventTypes.Pickup, selected.itemId, selected.amount);
+                      this.eventCtrl.SendEventMessage(EventTypes.Reward, selected.itemId, selected.amount);
                   }
               }
               // (선택 보상에 경험치/골드가 포함되어 있다면 여기서 추가 지급 로직 구현)

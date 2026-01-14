@@ -39,19 +39,11 @@ import { NpcCtrl } from '@Glibs/actors/npc/npcctrl'
 import { DialogueManager } from '@Glibs/systems/alarm/dialoguemgr'
 import { QuestManager } from '@Glibs/systems/quests/questmgr'
 import { newQuestDefs } from './localquests/questdata'
-import Confetti from '@Glibs/ux/confetti/confetti'
 import { LocalQuestManager } from './localquests/localquestmgr'
-import MapFactory from './mapfactory'
+import MapFactory from './gamefab/mapfactory'
 import ProgressBarHtml from '@Glibs/ux/progress/progressbarhtml'
 import CampfireCtrl from './gameobjects/campfirectrl'
 import DayNightRig from '@Glibs/world/sky/daynightrig'
-import { RadialMenuUI } from '@Glibs/ux/radialmenus/radialmenus'
-import InvenDialog from './dialogs/invendlg'
-import QuestDialog from './localquests/questdlg'
-import StatusBar from '@Glibs/ux/menuicons/statusbar'
-import { Icons } from '@Glibs/types/icontypes'
-import StatusCtrl from './gameobjects/statusctrl'
-import MenuGroup from '@Glibs/ux/menuicons/menugroup'
 import { GlobalEffector } from '@Glibs/magical/effects/globaleffector'
 import PlayState from './gamestates/playstate'
 import LoadingMgr from '@Glibs/ux/loading/loadingmgr'
@@ -59,7 +51,9 @@ import { SimpleCircleProgressBar } from '@Glibs/ux/progress/simplecirclebar'
 import LoadingDialog from './dialogs/loadingdlg'
 import DayState from './gamestates/daystate'
 import DebugDialog from './dialogs/debugdlg'
-import DialogFactory from './dialogs/dialogfab'
+import DialogFactory from './gamefab/dialogfab'
+import MenuFactory from './gamefab/menufactory'
+import HudFactory from './gamefab/hudfactory'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -107,37 +101,10 @@ export class TwilightSurvivor {
     dialogue = new DialogueManager(this.eventCtrl)
     input = new Input(this.eventCtrl)
     quest = new QuestManager(this.eventCtrl, newQuestDefs)
-    questDlg = new QuestDialog(this.eventCtrl, this.quest, this.invenFab)
-    invenDlg = new InvenDialog(this.loader, this.eventCtrl, this.invenFab, this.player)
-    confetti = new Confetti(this.eventCtrl, document.body)
     localQuest  = new LocalQuestManager(this.eventCtrl, this.quest)
-    ringMenu = new RadialMenuUI(this.eventCtrl, {
-        // overlay 부모(생략시 document.body)
-        parent: this.renderer.domElement.parentElement || document.body,
-        onlyWhenTargetWithin: this.renderer.domElement,
+    
 
-        // GUI에서 쓰던 옵션들
-        radius: ((window.innerWidth > window.innerHeight) ? window.innerHeight : window.innerWidth) * 0.5 / 2,
-        itemSize: 76,
-        startAngleDeg: -90,
-        animateMs: 520,
-        spinOnOpen: 1.2,
-        easing: 'outBack',
-        ringStyle: 'none',     // 'none' | 'solid' | 'line'
-        shape: 'circle',       // 'circle' | 'rounded' | 'square' | 'hex'
-        theme: 'SF Neon',       // 또는 'custom' + themeVars
-        fontScale: 0.52,
-        autoCloseOnMiss: true,
-        openAt: 'center',       // 또는 'pointer' (클릭 지점 팝업)
-        enableGlobalCenterClick: true, // 전역 중앙 클릭 열기
-    });
-
-    sdom = new MenuGroup(document.body, { height: "50px", top: "0px", opacity: "0" })
-    statusBar = new StatusBar({ icon: Icons.Lightning, lolliBar: true, max: 100 })
-    heartBar = new StatusBar({ icon: Icons.Heart, lolliBar: true, max: 100 })
-
-    campctrl = new CampfireCtrl(this.eventCtrl, this.invenFab.inven, this.player, CampfierPos, this.statusBar)
-    statusCtrl = new StatusCtrl(this.eventCtrl, this.playerCtrl, this.heartBar)
+    campctrl = new CampfireCtrl(this.eventCtrl, this.invenFab.inven, this.player, CampfierPos)
 
     fog = new THREE.FogExp2(0x87ceeb, 0.0025 * 5);
 
@@ -146,6 +113,9 @@ export class TwilightSurvivor {
 
     debugDlg = new DebugDialog(this.eventCtrl, this.loadDlg)
     dialogFab = new DialogFactory(this.eventCtrl, this.loader, this.invenFab, this.player, this.quest)
+
+    menuFab = new MenuFactory(this.loader, this.eventCtrl, this.quest, this.invenFab, this.player, this.renderer.domElement, this.renderer.domElement.parentElement || document.body)
+    hudFab = new HudFactory(this.eventCtrl, this.playerCtrl)
 
     constructor() {
         console.log('Twilight Survivor')
@@ -162,10 +132,6 @@ export class TwilightSurvivor {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         const pixel = (window.devicePixelRatio >= 2) ? window.devicePixelRatio / 2 : window.devicePixelRatio;
         this.renderer.setPixelRatio(Math.min(pixel, 1.0));
-
-        this.ringMenu.unmount()
-        this.sdom.addMenu(this.heartBar)
-        this.sdom.addMenu(this.statusBar)
 
         this.eventCtrl.SendEventMessage(EventTypes.RegisterLoadingItems, async () => {
             document.body.appendChild(this.renderer.domElement)
@@ -238,16 +204,16 @@ export class TwilightSurvivor {
                 this.debugDlg, this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
             new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player,this.monsters,
-                this.quest, this.dialogFab, this.loadDlg, this.ringMenu, this.sdom,
+                this.quest, this.dialogFab, this.loadDlg, this.menuFab.ringMenu,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("dayplay",
             new DayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl, this.monsters,
-                this.fog, this.quest, this.dialogFab, this.loadDlg, this.ringMenu, this.sdom,
+                this.fog, this.quest, this.dialogFab, this.loadDlg, this.menuFab.ringMenu,
                 this.campctrl, [], [], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("tutorial",
             new TutorialState(this.eventCtrl, this.camera, this.dialogue, this.player, 
                 this.playerCtrl, this.monsters,
-                this.quest, this.dialogFab, this.loadDlg, this.ringMenu, this.sdom,
+                this.quest, this.dialogFab, this.loadDlg, this.menuFab.ringMenu,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
     }
 

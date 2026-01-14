@@ -4,7 +4,6 @@ import { GameButton } from "@Glibs/ux/buttons/gamebutton"
 import TapButton from "@Glibs/ux/buttons/tapbutton"
 import BootModal from "@Glibs/ux/dialog/bootmodal"
 import WoodModal from "@Glibs/ux/dialog/woodmodal"
-import MapFactory from "src/mapfactory"
 import LoadingDialog from "./loadingdlg"
 
 export default class DebugDialog {

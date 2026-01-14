@@ -22,8 +22,9 @@ import { itemDefs } from "@Glibs/inventory/items/itemdefs";
 import { clearAllPendingTimers, createManagedTimeout } from "./utils";
 import CompleteDialog from "../dialogs/completedlg";
 import LoadingDialog from "../dialogs/loadingdlg";
-import DialogFactory from "../dialogs/dialogfab";
+import DialogFactory from "../gamefab/dialogfab";
 import AbstractState from "./abstractstate";
+import { TSEventTypes } from "../types/commontypes";
 
 export default class PlayState extends AbstractState {
     compDlg = new CompleteDialog(this.eventCtrl)
@@ -37,7 +38,6 @@ export default class PlayState extends AbstractState {
         private dialogFab: DialogFactory,
         private loadingDlg: LoadingDialog,
         private ringMenu: RadialMenuUI,
-        private sdom: MenuGroup,
         private campCtrl: CampfireCtrl,
         private stormRain: RainStorm,
         objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
@@ -66,8 +66,8 @@ export default class PlayState extends AbstractState {
                 type: 'action', func: () => {
                     this.storymode()
                     this.eventCtrl.SendEventMessage(EventTypes.DayNightCtrl, { v: 0.85, auto: false })
-                    this.sdom.Show()
-                    this.eventCtrl.SendEventMessage(EventTypes.Pickup, itemDefs.Hanhwasbat.id)
+                    this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: true })
+                    this.eventCtrl.SendEventMessage(EventTypes.Reward, itemDefs.Hanhwasbat.id)
                 }
             },
             { type: 'dialogue', key: KeyType.Action3, text: "목소리: 이제 좀비가 몰려와. 100마리를 사냥하면 여기서 탈출할 수 있을거야." },
@@ -119,7 +119,7 @@ export default class PlayState extends AbstractState {
     Uninit(): void {
         this.campCtrl.uninit()
         this.ringMenu.unmount()
-        this.sdom.Hide()
+        this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: false })
         clearAllPendingTimers()
     }
     Renderer(r: IPostPro, delta: number): void {

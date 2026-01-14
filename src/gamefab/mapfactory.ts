@@ -6,11 +6,9 @@ import CustomGround from "@Glibs/world/ground/customground";
 import { ObjectPlacer, PlacedUV, PlacementInfo } from "@Glibs/world/worldmap/autoobjectplacer";
 import WorldMap from "@Glibs/world/worldmap/worldmap";
 import { Char } from '@Glibs/types/assettypes';
-import { CampfierPos } from './index';
+import { CampfierPos } from '../index';
 import { Player } from '@Glibs/actors/player/player';
 import { WindyInstancedVegetation } from '@Glibs/world/fluffynature/massfluffy';
-import { SimpleCircleProgressBar } from '@Glibs/ux/progress/simplecirclebar';
-import TapButton from '@Glibs/ux/buttons/tapbutton';
 
 export default class MapFactory {
     placer = new ObjectPlacer()

@@ -10,16 +10,13 @@ import { IPhysicsObject } from "@Glibs/interface/iobject";
 import { gsap } from "gsap";
 import SystemDialog from "../dialogs/sysdlg";
 import { IconsColor } from "@Glibs/ux/menuicons/icontypes";
-import StatusBar from "@Glibs/ux/menuicons/statusbar";
 import { Player } from "@Glibs/actors/player/player";
 import { Loader } from "@Glibs/loader/loader";
 import { EventTypes } from "@Glibs/types/globaltypes";
 import { PlayerCtrl } from "@Glibs/actors/player/playerctrl";
-import { Char } from "@Glibs/loader/assettypes";
 import { Grid } from "@Glibs/ux/grid/grid";
 import { SimpleGux } from "@Glibs/ux/gux";
 import DebugDialog from "../dialogs/debugdlg";
-import MapFactory from "src/mapfactory";
 
 export default class MenuState implements IGameMode {
     get Objects() { return this.objs }

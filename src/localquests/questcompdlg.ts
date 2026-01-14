@@ -127,7 +127,7 @@ export default class QuestCompleteDialog {
 
         const okBtn = new GameButton({
             title: "Select", click: () => {
-                this.eventCtrl.SendEventMessage(EventTypes.Pickup, item.id)
+                this.eventCtrl.SendEventMessage(EventTypes.Reward, item.id)
                 this.tap.Hide()
             }
         })

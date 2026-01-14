@@ -4,7 +4,6 @@ import WoodModal from "@Glibs/ux/dialog/woodmodal";
 import ListView from "@Glibs/ux/listviews/listview";
 import ListItem from "@Glibs/ux/listviews/listitem";
 import { EventTypes } from "@Glibs/types/globaltypes";
-import { GameButton } from "@Glibs/ux/buttons/gamebutton";
 import { QuestManager } from '@Glibs/systems/quests/questmgr';
 import Slot from "@Glibs/ux/listviews/slot";
 import { SimpleGux } from "@Glibs/ux/gux";

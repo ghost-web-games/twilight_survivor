@@ -5,7 +5,7 @@ import TapButton from "@Glibs/ux/buttons/tapbutton"
 import WoodModal from "@Glibs/ux/dialog/woodmodal"
 import LoadingMgr from "@Glibs/ux/loading/loadingmgr"
 import { SimpleCircleProgressBar } from "@Glibs/ux/progress/simplecirclebar"
-import MapFactory from "src/mapfactory"
+import MapFactory from "../gamefab/mapfactory"
 
 export default class LoadingDialog {
     tap: TapButton

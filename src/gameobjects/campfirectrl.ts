@@ -23,7 +23,6 @@ export default class CampfireCtrl {
         private inven: Inventory,
         private player: IPhysicsObject,
         private campfire: THREE.Vector3,
-        private status: StatusBar,
     ) {
         eventCtrl.RegisterEventListener(EventTypes.CampfireInteract, (actor: IPhysicsObject) => {
             const slot = this.inven.GetItemSlot(itemDefs.Logs.id)
@@ -91,7 +90,6 @@ export default class CampfireCtrl {
             }
 
             console.log(changeAmount, this.fireAmount, this.btAmount)
-            this.status.UpdateStatus((1-this.btAmount) * 100)
             // 변경된 값을 이벤트로 전송
             this.eventCtrl.SendEventMessage(EventTypes.DarkParticle, this.btAmount);
 
