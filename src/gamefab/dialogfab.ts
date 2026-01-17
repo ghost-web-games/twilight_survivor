@@ -27,6 +27,8 @@ import GameManager from "@Glibs/gameobjects/gamemanager";
 import { DefaultTechTreeDefs } from "@Glibs/techtree/techtreedefs";
 import { QuestCompleteView } from "@Glibs/ux/dialog/souldialog/views/questcompleteview";
 import { QuestId } from "@Glibs/systems/quests/questdef";
+import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
+import { TSEventTypes } from "../types/commontypes";
 
 export default class DialogFactory {
   manager: DialogManager
@@ -42,17 +44,39 @@ export default class DialogFactory {
     },
   });
   gameMgr = new GameManager(this.eventCtrl, this.svc)
+  ringMenu = new RadialMenuUI(this.eventCtrl, {
+    // overlay 부모(생략시 document.body)
+    parent: this.parent,
+    onlyWhenTargetWithin: this.targetDom,
+
+    // GUI에서 쓰던 옵션들
+    radius: ((window.innerWidth > window.innerHeight) ? window.innerHeight : window.innerWidth) * 0.5 / 2,
+    itemSize: 76,
+    startAngleDeg: -90,
+    animateMs: 520,
+    spinOnOpen: 1.2,
+    easing: 'outBack',
+    ringStyle: 'none',     // 'none' | 'solid' | 'line'
+    shape: 'circle',       // 'circle' | 'rounded' | 'square' | 'hex'
+    theme: 'SF Neon',       // 또는 'custom' + themeVars
+    fontScale: 0.52,
+    autoCloseOnMiss: true,
+    openAt: 'center',       // 또는 'pointer' (클릭 지점 팝업)
+    enableGlobalCenterClick: true, // 전역 중앙 클릭 열기
+  });
   constructor(
     private eventCtrl: IEventController,
     private loader: Loader,
     private invenFab: InvenFactory,
     private player: Player,
     private quest: QuestManager,
+    private targetDom: HTMLElement,
+    private parent: HTMLElement,
   ) {
     const renderer = new DomRenderer({ useShadow: true, theme: 'souls' });
     const manager = new DialogManager(eventCtrl, { renderer });
-    const miniRenderer = new ThreeCharacterRenderer(this.loader, this.eventCtrl, 
-        this.invenFab, this.player);
+    const miniRenderer = new ThreeCharacterRenderer(this.loader, this.eventCtrl,
+      this.invenFab, this.player);
 
     // 뷰 등록
     manager.registry.register('narrative', () => new NarrativeView());
@@ -71,12 +95,21 @@ export default class DialogFactory {
     eventCtrl.RegisterEventListener(EventTypes.QuestComplete, (id: QuestId) => {
       this.openQuestComplete(id)
     })
+    eventCtrl.RegisterEventListener(TSEventTypes.OpenCharacter, () => {
+      this.openCharacter()
+    })
+  }
+  Mount() {
+    this.ringMenu.mount(document.body)
+  }
+  Unmount() {
+    this.ringMenu.unmount()
   }
   updateQuest() {
-      const defs = this.quest.questDefinitions;
-      const active = this.quest.getActiveQuests();
-      const completed = this.quest.completedQuests;
-      this.store.syncQuests(defs, active, completed)
+    const defs = this.quest.questDefinitions;
+    const active = this.quest.getActiveQuests();
+    const completed = this.quest.completedQuests;
+    this.store.syncQuests(defs, active, completed)
   }
   openCharacter() {
     const equip: Partial<Record<string, IItem | null>> = {};
@@ -91,7 +124,8 @@ export default class DialogFactory {
     this.manager.open('character', {
       base: { STR: 20, DEX: 14, INT: 8, FAI: 10, VIT: 22 },
       resistBase: { fire: 25, elec: 18, ice: 12 },
-      equip, }, { wide: true });
+      equip,
+    }, { wide: true });
 
   }
   openInventory() {
@@ -184,7 +218,7 @@ export default class DialogFactory {
   }
   openQuestDetail() {
     this.manager.open('quest-detail', {
-      quest: this.store.quests[0], 
+      quest: this.store.quests[0],
       trackedId: this.store.trackedQuestId,
       // [핵심] 아이템 데이터를 조회하는 함수 전달
       getItem: (itemId: string) => {
@@ -199,38 +233,38 @@ export default class DialogFactory {
     if (myQuest == null) return
 
     this.manager.open('quest-complete', {
-      quest: myQuest, 
+      quest: myQuest,
       getItem: (itemId: string) => {
         const def = itemDefs[itemId as keyof typeof itemDefs];
         if (!def) return undefined;
         return new Item(ItemFactory.generateUniqueId(), def);
       },
       onComplete: (choiceIndex: number) => {
-          // 1. 고정 보상 지급 (rewards)
-          if (myQuest.rewards.experience) 
-            this.eventCtrl.SendEventMessage(EventTypes.Exp, myQuest.rewards.experience);
-          if (myQuest.rewards.gold) 
-            this.eventCtrl.SendEventMessage(EventTypes.Gold, myQuest.rewards.gold);
-          myQuest.rewards.items?.forEach(rw => 
-            this.eventCtrl.SendEventMessage(EventTypes.Reward, rw.itemId, rw.amount));
-  
-          // 2. 선택 보상 지급 (selectiveRewards)
-          if (myQuest.selectiveRewards) {
-              // 선택된 인덱스가 있다면 해당 아이템 지급
-              if (choiceIndex !== null && myQuest.selectiveRewards.items) {
-                  const selected = myQuest.selectiveRewards.items[choiceIndex];
-                  if (selected) {
-                      this.eventCtrl.SendEventMessage(EventTypes.Reward, selected.itemId, selected.amount);
-                  }
-              }
-              // (선택 보상에 경험치/골드가 포함되어 있다면 여기서 추가 지급 로직 구현)
+        // 1. 고정 보상 지급 (rewards)
+        if (myQuest.rewards.experience)
+          this.eventCtrl.SendEventMessage(EventTypes.Exp, myQuest.rewards.experience);
+        if (myQuest.rewards.gold)
+          this.eventCtrl.SendEventMessage(EventTypes.Gold, myQuest.rewards.gold);
+        myQuest.rewards.items?.forEach(rw =>
+          this.eventCtrl.SendEventMessage(EventTypes.Reward, rw.itemId, rw.amount));
+
+        // 2. 선택 보상 지급 (selectiveRewards)
+        if (myQuest.selectiveRewards) {
+          // 선택된 인덱스가 있다면 해당 아이템 지급
+          if (choiceIndex !== null && myQuest.selectiveRewards.items) {
+            const selected = myQuest.selectiveRewards.items[choiceIndex];
+            if (selected) {
+              this.eventCtrl.SendEventMessage(EventTypes.Reward, selected.itemId, selected.amount);
+            }
           }
+          // (선택 보상에 경험치/골드가 포함되어 있다면 여기서 추가 지급 로직 구현)
+        }
       }
-  }, { confetti: 'blast' });
+    }, { confetti: 'blast' });
   }
   openQuestLog() {
-    this.manager.open('quest-log', { 
-      quests: this.store.quests, 
+    this.manager.open('quest-log', {
+      quests: this.store.quests,
       trackedId: this.store.trackedQuestId,
       // [핵심] 아이템 데이터를 조회하는 함수 전달
       getItem: (itemId: string) => {
@@ -255,7 +289,7 @@ export default class DialogFactory {
         rarity: tech.rarity,
         desc: tech.description
       })
-      
+
     })
     this.manager.open('cards', {
       // cards: [
@@ -264,9 +298,9 @@ export default class DialogFactory {
       //   { id: 'heal', title: '흡혈', rarity: 'Epic', desc: '처치 시 체력 소량 회복' },
       // ],
       cards,
-      onPick: (id: string) => { 
+      onPick: (id: string) => {
         this.gameMgr.upgradeTech(id)
-        console.log(id) 
+        console.log(id)
       },
     }, {
       confetti: 'rain'  // <--- 효과 발동!

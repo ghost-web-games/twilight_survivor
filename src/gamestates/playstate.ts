@@ -37,7 +37,6 @@ export default class PlayState extends AbstractState {
         private quest: QuestManager,
         private dialogFab: DialogFactory,
         private loadingDlg: LoadingDialog,
-        private ringMenu: RadialMenuUI,
         private campCtrl: CampfireCtrl,
         private stormRain: RainStorm,
         objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
@@ -47,12 +46,12 @@ export default class PlayState extends AbstractState {
         super(eventCtrl, objs, taskObj, phyObj)
     }
     async Init() {
-        this.ringMenu.setItems([
+        this.dialogFab.ringMenu.setItems([
             // { type: 'img', value: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f392.svg' },
             { icon: { type: 'webfontMS', value: 'personal_bag' }, onSelect: () => { this.dialogFab.openInventory() } },
             { icon: { type: 'webfontMS', value: 'exclamation' }, onSelect: () => { this.dialogFab.openQuestLog() } },
         ]);
-        this.ringMenu.mount(document.body)
+        this.dialogFab.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
         this.eventCtrl.SendEventMessage(EventTypes.OrbitControlsOnOff, true)
@@ -118,7 +117,7 @@ export default class PlayState extends AbstractState {
     }
     Uninit(): void {
         this.campCtrl.uninit()
-        this.ringMenu.unmount()
+        this.dialogFab.ringMenu.unmount()
         this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: false })
         clearAllPendingTimers()
     }

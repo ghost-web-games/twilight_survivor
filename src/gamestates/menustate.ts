@@ -42,7 +42,7 @@ export default class MenuState implements IGameMode {
         const iconDiv = document.createElement("div")
         const grid = new Grid()
         const icon = new MenuIcon({
-            text: "New Game", boxWidth: "100px", color: IconsColor.Yellow, 
+            text: "Test Game", boxWidth: "100px", color: IconsColor.Yellow, 
             icon: Icons.Star, boxEnable: true, lolli: true, click:() => {
                 this.eventCtrl.SendEventMessage(EventTypes.GameCenter, "play")
             }

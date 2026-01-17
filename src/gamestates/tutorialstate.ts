@@ -37,7 +37,6 @@ export default class TutorialState extends AbstractState {
         private quest: QuestManager,
         private dialogFab: DialogFactory,
         private loadingDlg: LoadingDialog,
-        private ringMenu: RadialMenuUI,
         private campCtrl: CampfireCtrl,
         private stormRain: RainStorm,
         objs: THREE.Object3D[] | THREE.Group[] | THREE.Mesh[] = [],
@@ -47,12 +46,12 @@ export default class TutorialState extends AbstractState {
         super(eventCtrl, objs, taskObj, phyObj)
     }
     async Init() {
-        this.ringMenu.setItems([
+        this.dialogFab.ringMenu.setItems([
             // { type: 'img', value: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f392.svg' },
             { icon: { type: 'webfontMS', value: 'personal_bag' }, onSelect: () => { this.dialogFab.openInventory() } },
             { icon: { type: 'webfontMS', value: 'exclamation' }, onSelect: () => { this.dialogFab.openQuestLog() } },
         ]);
-        this.ringMenu.mount(document.body)
+        this.dialogFab.ringMenu.mount(document.body)
         this.camera.controls.enabled = true
         this.eventCtrl.SendEventMessage(EventTypes.Spinner, true)
         this.eventCtrl.SendEventMessage(EventTypes.OrbitControlsOnOff, true)
@@ -74,6 +73,7 @@ export default class TutorialState extends AbstractState {
             { type: 'dialogue', key: KeyType.Action3, text: "목소리: 생명의 불을 찾아야해!" },
             {
                 type: 'action', func: () => {
+                    this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: true })
                     this.quest.startQuest(QuestLocalId.Q004_OPENING_CAMPFIRE)
                     this.playmode()
                     this.eventCtrl.SendEventMessage(EventTypes.AlarmNormal, "캐릭터를 클릭하면 메뉴를 볼 수 있습니다.")
@@ -114,7 +114,6 @@ export default class TutorialState extends AbstractState {
             { type: 'dialogue', key: KeyType.Action3, text: "목소리: 그 때마다 모닥불을 찾아가야해" },
             {
                 type: 'action', func: () => {
-                    this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: true })
                     this.quest.startQuest(QuestLocalId.Q006_ESCAPE_DARKSIDE)
                     this.playmode()
                     this.eventCtrl.SendEventMessage(EventTypes.DeregisterLoop, this.stormRain)
@@ -219,7 +218,7 @@ export default class TutorialState extends AbstractState {
     }
     Uninit(): void {
         this.campCtrl.uninit()
-        this.ringMenu.unmount()
+        this.dialogFab.ringMenu.unmount()
         this.eventCtrl.SendEventMessage(TSEventTypes.HudCtrl, { visible: false })
         clearAllPendingTimers()
     }

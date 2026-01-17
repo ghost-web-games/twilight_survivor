@@ -28,7 +28,7 @@ export default class HudFactory {
           icon: { type: 'text', value: '😎' }, // 이모지 사용``
           // 클릭 시 실행 (예: 상태창 열기)
           onClick: (e) => {
-            console.log('캐릭터 클릭됨!', e);
+            this.eventCtrl.SendEventMessage(TSEventTypes.OpenCharacter)
           }
         });
         this.eventCtrl.RegisterEventListener(EventTypes.LevelUp, (lv: number) => {
@@ -46,7 +46,7 @@ export default class HudFactory {
         this.hud.Hide()
         //buffs.addBuff({ id: 'ignite1', icon: '🔥', name: '점화', desc: '초당 화상 피해', duration: 80 });
     
-        const statusCtrl = new StatusCtrl(this.eventCtrl, this.playerCtrl, heart, mp, exp)
+        new StatusCtrl(this.eventCtrl, this.playerCtrl, heart, mp, exp, buffs)
 
         this.eventCtrl.RegisterEventListener(TSEventTypes.HudCtrl, ({ visible = false } = {}) => {
             if(visible) {

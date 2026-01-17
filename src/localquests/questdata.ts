@@ -38,7 +38,6 @@ export const newQuestDefs = {
         ],
         "rewards": {
             "experience": 100,
-            "items": [{ "itemId": itemDefs.Hanhwasbat.id, "amount": 1 }]
         }
     },
     [QuestLocalId.Q005_FIRE_CAMPFIRE]: {

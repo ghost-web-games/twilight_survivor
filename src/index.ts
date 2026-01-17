@@ -52,8 +52,8 @@ import LoadingDialog from './dialogs/loadingdlg'
 import DayState from './gamestates/daystate'
 import DebugDialog from './dialogs/debugdlg'
 import DialogFactory from './gamefab/dialogfab'
-import MenuFactory from './gamefab/menufactory'
 import HudFactory from './gamefab/hudfactory'
+import LocalStatusCtrl from './gameobjects/statusctrl'
 
 export const DefaultPosition = new THREE.Vector3(20, -0.6, -145)
 export const CampfierPos = new THREE.Vector3(20 + 10, 0, -145 + 40)
@@ -112,10 +112,10 @@ export class TwilightSurvivor {
     loadDlg = new LoadingDialog(this.eventCtrl, this.loadMgr, this.mapFab)
 
     debugDlg = new DebugDialog(this.eventCtrl, this.loadDlg)
-    dialogFab = new DialogFactory(this.eventCtrl, this.loader, this.invenFab, this.player, this.quest)
-
-    menuFab = new MenuFactory(this.loader, this.eventCtrl, this.quest, this.invenFab, this.player, this.renderer.domElement, this.renderer.domElement.parentElement || document.body)
+    dialogFab = new DialogFactory(this.eventCtrl, this.loader, this.invenFab, this.player, this.quest, this.renderer.domElement, this.renderer.domElement.parentElement || document.body)
     hudFab = new HudFactory(this.eventCtrl, this.playerCtrl)
+
+    localStatus = new LocalStatusCtrl(this.eventCtrl, this.playerCtrl, this.dialogFab)
 
     constructor() {
         console.log('Twilight Survivor')
@@ -204,16 +204,16 @@ export class TwilightSurvivor {
                 this.debugDlg, this.scene, this.camera, [], [stormRain], [this.player,]))
         this.gamecenter.RegisterGameMode("play",
             new PlayState(this.eventCtrl, this.camera, this.dialogue, this.player,this.monsters,
-                this.quest, this.dialogFab, this.loadDlg, this.menuFab.ringMenu,
+                this.quest, this.dialogFab, this.loadDlg,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("dayplay",
             new DayState(this.eventCtrl, this.camera, this.dialogue, this.player, this.playerCtrl, this.monsters,
-                this.fog, this.quest, this.dialogFab, this.loadDlg, this.menuFab.ringMenu,
+                this.fog, this.quest, this.dialogFab, this.loadDlg,
                 this.campctrl, [], [], [this.player, this.npc]))
         this.gamecenter.RegisterGameMode("tutorial",
             new TutorialState(this.eventCtrl, this.camera, this.dialogue, this.player, 
                 this.playerCtrl, this.monsters,
-                this.quest, this.dialogFab, this.loadDlg, this.menuFab.ringMenu,
+                this.quest, this.dialogFab, this.loadDlg,
                 this.campctrl, stormRain, [], [], [this.player, this.npc]))
     }
 

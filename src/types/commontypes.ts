@@ -4,6 +4,7 @@ import { EventTypes } from "@Glibs/types/globaltypes";
 export const TSEventTypes = {
     ...EventTypes,
     HudCtrl: "hudCtrl", 
+    OpenCharacter: "openCharacter",
   } as const;
   
   // 2. 확장된 타입 추출
