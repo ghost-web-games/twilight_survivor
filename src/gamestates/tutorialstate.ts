@@ -48,8 +48,8 @@ export default class TutorialState extends AbstractState {
     async Init() {
         this.dialogFab.ringMenu.setItems([
             // { type: 'img', value: 'https://raw.githubusercontent.com/twitter/twemoji/master/assets/svg/1f392.svg' },
-            { icon: { type: 'webfontMS', value: 'personal_bag' }, onSelect: () => { this.dialogFab.openInventory() } },
-            { icon: { type: 'webfontMS', value: 'exclamation' }, onSelect: () => { this.dialogFab.openQuestLog() } },
+            { icon: { type: 'emoji', value: '🎒' }, onSelect: () => { this.dialogFab.openInventory() } },
+            { icon: { type: 'emoji', value: '❗' }, onSelect: () => { this.dialogFab.openQuestLog() } },
         ]);
         this.dialogFab.ringMenu.mount(document.body)
         this.camera.controls.enabled = true

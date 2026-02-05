@@ -1,7 +1,7 @@
 import { DialogManager } from "@Glibs/ux/dialog/souldialog/dlgmanager";
 import { DialogStore } from "@Glibs/ux/dialog/souldialog/dlgstore";
 import { DomRenderer } from "@Glibs/ux/dialog/souldialog/domrenderer";
-import { CharacterView } from "@Glibs/ux/dialog/souldialog/views/characterview";
+import { CharacterView, IStatValue } from "@Glibs/ux/dialog/souldialog/views/characterview";
 import { ConfirmView } from "@Glibs/ux/dialog/souldialog/views/confirmview";
 import { InventoryView } from "@Glibs/ux/dialog/souldialog/views/inventoryview";
 import { LevelupCardsView } from "@Glibs/ux/dialog/souldialog/views/levelupcardsview";
@@ -29,6 +29,32 @@ import { QuestCompleteView } from "@Glibs/ux/dialog/souldialog/views/questcomple
 import { QuestId } from "@Glibs/systems/quests/questdef";
 import { RadialMenuUI } from "@Glibs/ux/radialmenus/radialmenus";
 import { TSEventTypes } from "../types/commontypes";
+import { BaseSpec } from "@Glibs/actors/battle/basespec";
+import { StatKey } from "@Glibs/types/stattypes";
+import { DamageFormula } from "@Glibs/actors/battle/damageformula";
+
+// 단일 스탯을 { total, bonus } 형태로 변환하는 헬퍼
+const toStat = (spec: BaseSpec, key: StatKey): IStatValue => {
+    const total = spec.stats.getStat(key);
+    
+    // 예: 보너스는 (Total - Base)로 계산하거나, 
+    // StatSystem에 getModifierSum(key) 같은 메서드가 있다면 그것을 사용
+    // 여기서는 가정하여 (현재값 - 태생값) 로직을 예시로 듭니다.
+    const base = spec.stats.getBaseStat(key) || 0; 
+    
+    return {
+        total: Math.floor(total),
+        bonus: Math.floor(total - base)
+    };
+};
+
+// 공격력 등 계산된 스탯을 위한 헬퍼 (DamageFormula 활용)
+const toCalcStat = (total: number, baseOnly: number): IStatValue => {
+    return {
+        total: Math.floor(total),
+        bonus: Math.floor(total - baseOnly)
+    };
+};
 
 export default class DialogFactory {
   manager: DialogManager
@@ -69,6 +95,7 @@ export default class DialogFactory {
     private loader: Loader,
     private invenFab: InvenFactory,
     private player: Player,
+    private baseSpec: BaseSpec,
     private quest: QuestManager,
     private targetDom: HTMLElement,
     private parent: HTMLElement,
@@ -121,12 +148,31 @@ export default class DialogFactory {
         equip[uiSlot] = item;
       }
     });
+    const s = this.baseSpec;
+
+    // 반복적인 매핑을 위한 헬퍼
+    const mapStats = (keys: StatKey[]) => {
+      const res: any = {};
+      keys.forEach(k => {
+        // 이전에 만든 toStat 함수 사용
+        res[k] = toStat(s, k);
+      });
+      return res;
+    };
+
     this.manager.open('character', {
-      base: { STR: 20, DEX: 14, INT: 8, FAI: 10, VIT: 22 },
-      resistBase: { fire: 25, elec: 18, ice: 12 },
+      attributes: mapStats(['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'agility', 'luck', 'vitality', 'faith']),
+      combat: {
+        ...mapStats(['magicAttack', 'defense', 'magicDefense', 'criticalRate', 'criticalDamage', 'accuracy', 'evasion', 'penetration', 'block', 'attackSpeed', 'attackRange', 'speed']),
+        // 공격력은 별도 수식 적용 시 직접 대입
+        attack: toCalcStat(DamageFormula.getPhysicalAttack(s), s.stats.getBaseStat('attack'))
+      },
+      resources: mapStats(['hp', 'hpRegen', 'mp', 'mpRegen', 'stamina', 'staminaRegen']),
+      resistances: mapStats(['fireResistance', 'iceResistance', 'poisonResistance', 'stunResistance', 'slowResistance', 'electricResistance', 'debuffResistance', 'knockbackResistance']),
+      auxiliary: mapStats(['movementSpeed', 'castingSpeed', 'goldBonus', 'expBonus', 'itemDropRate']),
+      special: mapStats(['lifeSteal', 'reflectDamage', 'cooldownReduction', 'thorns']),
       equip,
     }, { wide: true });
-
   }
   openInventory() {
     // 1. 인벤토리 데이터: 변환 없이 그대로 가져옵니다.
@@ -281,16 +327,16 @@ export default class DialogFactory {
   }
   openCard() {
     const techs = this.gameMgr.getAvailableTechs()
-    const cards: any[] = []
+    const _cards: any[] = []
     techs.forEach((tech) => {
-      cards.push({
+      _cards.push({
         id: tech.id,
         title: tech.name + " Lv." + tech.nextLv,
         rarity: tech.rarity,
         desc: tech.description
       })
-
     })
+    const cards = [..._cards].sort(() => 0.5 - Math.random()).slice(0, 3);
     this.manager.open('cards', {
       // cards: [
       //   { id: 'proj', title: '유도 단검 +1', rarity: 'Rare', desc: '추가 단검 1개 더 발사' },

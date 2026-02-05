@@ -89,7 +89,7 @@ export class TwilightSurvivor {
     player = new Player(this.loader, this.loader.GetAssets(Char.CharHumanMale), this.eventCtrl, this.scene, this.invenFab.inven, this.audioListener)
     playerCtrl = new PlayerCtrl(this.player, this.invenFab.inven, this.physics, this.camera, this.eventCtrl)
     monsters = new Monsters(this.loader, this.eventCtrl, this.scene, this.player, this.physics, this.monDb, { nameView: false })
-    projectile = new Projectile(this.eventCtrl, this.scene, this.playerCtrl.targets, this.monDb)
+    projectile = new Projectile(this.eventCtrl, this.scene, this.playerCtrl.targets)
     drops = new Drops(this.loader, this.scene, this.eventCtrl, this.player)
     npc = new Npc(this.loader, this.loader.GetAssets(Char.UltimatePAPHeartHalf), this.eventCtrl, this.scene, this.invenFab)
     npcCtrl = new NpcCtrl(this.npc, this.invenFab.inven, this.physics, this.camera, this.eventCtrl, this.playerCtrl.IdleSt)
@@ -112,7 +112,7 @@ export class TwilightSurvivor {
     loadDlg = new LoadingDialog(this.eventCtrl, this.loadMgr, this.mapFab)
 
     debugDlg = new DebugDialog(this.eventCtrl, this.loadDlg)
-    dialogFab = new DialogFactory(this.eventCtrl, this.loader, this.invenFab, this.player, this.quest, this.renderer.domElement, this.renderer.domElement.parentElement || document.body)
+    dialogFab = new DialogFactory(this.eventCtrl, this.loader, this.invenFab, this.player, this.playerCtrl.baseSpec, this.quest, this.renderer.domElement, this.renderer.domElement.parentElement || document.body)
     hudFab = new HudFactory(this.eventCtrl, this.playerCtrl)
 
     localStatus = new LocalStatusCtrl(this.eventCtrl, this.playerCtrl, this.dialogFab)
